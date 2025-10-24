@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product Menu → Zoho CRM Lead</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 24px; background: #0b0c10; color: #e5e7eb; }
+    h1 { font-size: 24px; margin: 0 0 8px; }
+    .note { margin: 0 0 16px; font-size: 12px; color: #9ca3af; }
+    .controls { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .card { background: #111318; border: 1px solid #1f2937; border-radius: 16px; padding: 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.25); }
+    .card h3 { margin: 0 0 8px; font-size: 18px; }
+    .price { font-weight: 600; margin: 4px 0 8px; }
+    .desc { font-size: 12px; color: #9ca3af; min-height: 40px; }
+    .row { display: flex; gap: 8px; align-items: center; }
+    input, select, button { border-radius: 10px; border: 1px solid #374151; background: #0f1115; color: #e5e7eb; padding: 10px 12px; }
+    button { cursor: pointer; }
+    .btn { background: #1f2937; }
+    .btn:hover { background: #2b3648; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; }
+    .modal-card { width: 100%; max-width: 440px; background: #0f1115; border: 1px solid #374151; border-radius: 16px; padding: 16px; }
+    .modal h2 { margin-top: 0; }
+    .banner { background:#1f2937; border:1px solid #374151; padding:10px 12px; border-radius:12px; margin-bottom:12px; font-size:12px; color:#d1d5db; }
+    .warn { color:#fbbf24; font-weight:600; }
+  </style>
+</head>
+<body>
+  <h1>Product Menu → Zoho CRM Lead</h1>
+  <div class="banner" id="banner" style="display:none;"></div>
+  <p class="note">Search your Zoho Inventory items and create a Zoho CRM Lead from a product click.</p>
+
+  <div class="controls">
+    <input id="search" placeholder="Search products..." />
+    <select id="perPage">
+      <option value="50">50</option>
+      <option value="100">100</option>
+      <option value="200" selected>200</option>
+    </select>
+    <button class="btn" id="refresh">Refresh</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="modal" id="leadModal">
+    <div class="modal-card">
+      <h2 id="modalTitle">Create Lead</h2>
+      <div class="row">
+        <input id="firstName" placeholder="First name (optional)" />
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <input id="lastName" placeholder="Last name (required)" />
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <input id="email" type="email" placeholder="Email (optional)" />
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <input id="phone" placeholder="Phone (optional)" />
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <textarea id="notes" placeholder="Notes (optional)" style="width:100%; height:80px; border-radius: 10px; border: 1px solid #374151; background:#0f1115; color:#e5e7eb; padding:10px;"></textarea>
+      </div>
+      <div class="row" style="margin-top:12px; justify-content: flex-end;">
+        <button id="cancelBtn">Cancel</button>
+        <button class="btn" id="createLeadBtn">Create Lead</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mock data for preview/local without env vars
+    const DEMO_ITEMS = [
+      { id: '1', name: 'Free Base 0.63%', rate: 3800, description: 'Demo item from mock data', sku: 'Kratom_&_7OH_0.63' },
+      { id: '2', name: 'Free Base 0.7%', rate: 4800, description: 'Demo item from mock data', sku: 'Kratom_&_7OH_0.7' },
+      { id: '3', name: 'Free Base 0.8%', rate: 5100, description: 'Demo item from mock data', sku: 'Kratom_&_7OH_0.8' },
+      { id: '4', name: 'Free Base 0.88%', rate: 5700, description: 'Demo item from mock data', sku: 'Kratom_&_7OH_0.88' }
+    ];
+
+    const grid = document.getElementById('grid');
+    const banner = document.getElementById('banner');
+    const search = document.getElementById('search');
+    const perPage = document.getElementById('perPage');
+    const refreshBtn = document.getElementById('refresh');
+
+    const leadModal = document.getElementById('leadModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const firstNameEl = document.getElementById('firstName');
+    const lastNameEl = document.getElementById('lastName');
+    const emailEl = document.getElementById('email');
+    const phoneEl = document.getElementById('phone');
+    const notesEl = document.getElementById('notes');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const createLeadBtn = document.getElementById('createLeadBtn');
+
+    let allItems = [];
+    let selectedProduct = null;
+    let demoMode = false;
+
+    async function fetchItems(page = 1) {
+      const res = await fetch(`/api/items?page=${page}&per_page=${perPage.value}`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      return res.json();
+    }
+
+    async function loadAll() {
+      grid.innerHTML = '<div class="card">Loading…</div>';
+      let page = 1; let items = []; let hasMore = true;
+      try {
+        while (hasMore) {
+          const data = await fetchItems(page);
+          const chunk = (data.items || []).map(x => ({
+            id: x.item_id,
+            name: x.name,
+            rate: x.rate,
+            description: x.description || '',
+            sku: x.sku || x.item_name || '',
+          }));
+          items = items.concat(chunk);
+          const pg = data.page_context || {};
+          const current = pg.page || page;
+          const total = pg.total_pages || 1;
+          hasMore = current < total;
+          page++;
+        }
+        allItems = items;
+      } catch (e) {
+        demoMode = true;
+        allItems = DEMO_ITEMS;
+        banner.style.display = 'block';
+        banner.innerHTML = '<span class="warn">Preview mode:</span> Showing mock products because the API is not responding. Once deployed with environment variables, live items will load here.';
+      }
+      render();
+    }
+
+    function render() {
+      const q = (search.value || '').toLowerCase();
+      const filtered = allItems.filter(i => i.name.toLowerCase().includes(q) || (i.sku||'').toLowerCase().includes(q));
+      grid.innerHTML = '';
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="card">No products found.</div>';
+        return;
+      }
+      for (const item of filtered) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>${escapeHtml(item.name)}</h3>
+          <div class="price">$${Number(item.rate || 0).toLocaleString()}</div>
+          <div class="desc">${escapeHtml(item.description).slice(0, 160)}</div>
+          <div class="row" style="margin-top:12px; justify-content: space-between;">
+            <small>SKU: ${escapeHtml(item.sku||'')}</small>
+            <button class="btn">I'm interested</button>
+          </div>
+        `;
+        card.querySelector('button').addEventListener('click', () => openLeadModal(item));
+      grid.appendChild(card);
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function(m) {
+        return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m];
+      });
+    }
+
+    function openLeadModal(item) {
+      selectedProduct = item;
+      modalTitle.textContent = `Create Lead for: ${item.name}`;
+      firstNameEl.value = '';
+      lastNameEl.value = '';
+      emailEl.value = '';
+      phoneEl.value = '';
+      notesEl.value = '';
+      leadModal.style.display = 'flex';
+    }
+
+    cancelBtn.addEventListener('click', () => {
+      leadModal.style.display = 'none';
+      selectedProduct = null;
+    });
+
+    createLeadBtn.addEventListener('click', async () => {
+      if (!selectedProduct) return;
+      const lastName = lastNameEl.value.trim();
+      if (!lastName) { alert('Last name is required.'); return; }
+
+      if (demoMode) {
+        alert('Demo mode: would create a Lead for ' + selectedProduct.name + '. Deploy with env vars to enable live CRM.');
+        leadModal.style.display = 'none';
+        selectedProduct = null;
+        return;
+      }
+
+      const payload = {
+        firstName: firstNameEl.value.trim() || undefined,
+        lastName: lastName,
+        email: emailEl.value.trim() || undefined,
+        phone: phoneEl.value.trim() || undefined,
+        productName: selectedProduct.name,
+        notes: notesEl.value.trim() || undefined,
+      };
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        alert('Lead creation failed: ' + (json.message || json.error || JSON.stringify(json)));
+        return;
+      }
+      const status = (json.data && json.data[0] && json.data[0].status) || 'success';
+      if (status.toLowerCase() === 'success') {
+        alert('Lead created successfully!');
+      } else {
+        alert('Lead API response: ' + JSON.stringify(json));
+      }
+      leadModal.style.display = 'none';
+      selectedProduct = null;
+    });
+
+    search.addEventListener('input', render);
+    refreshBtn.addEventListener('click', loadAll);
+
+    loadAll();
+  </script>
+</body>
+</html>
