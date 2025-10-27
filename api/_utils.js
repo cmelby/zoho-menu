@@ -1,6 +1,4 @@
-// api/_utils.js — OAuth + JSON helpers (final)
-
-// Normalize API domain (used for inventory.zohoapis.com and www.zohoapis.com)
+// Normalize API domain
 const RAW_API = process.env.ZOHO_BASE_DOMAIN || 'zohoapis.com';
 const ZOHO_BASE_DOMAIN = RAW_API.trim().replace(/^https?:\/\/(www\.)?/, '');
 
@@ -18,11 +16,10 @@ async function getAccessToken() {
     refresh_token: process.env.ZOHO_REFRESH_TOKEN,
     client_id: process.env.ZOHO_CLIENT_ID,
     client_secret: process.env.ZOHO_CLIENT_SECRET,
-    grant_type: 'refresh_token',
+    grant_type: 'refresh_token'
   });
 
-  // ✅ use backticks so ACCOUNTS_HOST is interpolated
-  const tokenUrl = `https://accounts.${ACCOUNTS_HOST}/oauth/v2/token`;
+  const tokenUrl = `https://accounts.${ACCOUNTS_HOST}/oauth/v2/token`; // backticks!
 
   let res;
   try {
@@ -30,7 +27,6 @@ async function getAccessToken() {
   } catch (e) {
     throw new Error(`Token fetch failed (${tokenUrl}) :: ${e?.message || e}`);
   }
-
   if (!res.ok) {
     const txt = await res.text();
     throw new Error(`Token refresh failed (${tokenUrl}) :: ${res.status} ${txt}`);
@@ -52,3 +48,4 @@ async function readJson(req) {
 }
 
 module.exports = { getAccessToken, readJson, ZOHO_BASE_DOMAIN, ACCOUNTS_HOST };
+

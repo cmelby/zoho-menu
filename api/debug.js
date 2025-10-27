@@ -1,8 +1,7 @@
-// api/debug.js — prints sanitized env and computed URLs
 const { ZOHO_BASE_DOMAIN, ACCOUNTS_HOST } = require('./_utils');
 
 module.exports = async (_req, res) => {
-  const safe = {
+  res.status(200).json({
     ZOHO_BASE_DOMAIN,
     ACCOUNTS_HOST,
     HAS_CLIENT_ID: !!process.env.ZOHO_CLIENT_ID,
@@ -11,6 +10,6 @@ module.exports = async (_req, res) => {
     HAS_ORG_ID: !!process.env.ZOHO_ORG_ID,
     token_url: `https://accounts.${ACCOUNTS_HOST}/oauth/v2/token`,
     items_base: `https://inventory.${ZOHO_BASE_DOMAIN}/api/v1/items`
-  };
-  res.status(200).json(safe);
+  });
 };
+
