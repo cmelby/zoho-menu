@@ -69,11 +69,10 @@
   </div>
 
   <script>
-    // Mock data for preview/local without env vars
     const DEMO_ITEMS = [
       { id: '1', name: 'Free Base 0.63%', rate: 3800, description: 'Demo item from mock data', sku: 'Kratom_&_7OH_0.63' },
-      { id: '2', name: 'Free Base 0.7%', rate: 4800, description: 'Demo item from mock data', sku: 'Kratom_&_7OH_0.7' },
-      { id: '3', name: 'Free Base 0.8%', rate: 5100, description: 'Demo item from mock data', sku: 'Kratom_&_7OH_0.8' },
+      { id: '2', name: 'Free Base 0.7%',  rate: 4800, description: 'Demo item from mock data', sku: 'Kratom_&_7OH_0.7'  },
+      { id: '3', name: 'Free Base 0.8%',  rate: 5100, description: 'Demo item from mock data', sku: 'Kratom_&_7OH_0.8'  },
       { id: '4', name: 'Free Base 0.88%', rate: 5700, description: 'Demo item from mock data', sku: 'Kratom_&_7OH_0.88' }
     ];
 
@@ -99,9 +98,7 @@
 
     async function fetchItems(page = 1) {
       const res = await fetch(`/api/items?page=${page}&per_page=${perPage.value}`);
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     }
 
@@ -130,7 +127,7 @@
         demoMode = true;
         allItems = DEMO_ITEMS;
         banner.style.display = 'block';
-        banner.innerHTML = '<span class="warn">Preview mode:</span> Showing mock products because the API is not responding. Once deployed with environment variables, live items will load here.';
+        banner.innerHTML = '<span class="warn">Preview mode:</span> Showing mock products because the API is not responding. Once env vars are set and deployment updated, live items will load here.';
       }
       render();
     }
@@ -156,14 +153,12 @@
           </div>
         `;
         card.querySelector('button').addEventListener('click', () => openLeadModal(item));
-      grid.appendChild(card);
+        grid.appendChild(card);
       }
     }
 
     function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, function(m) {
-        return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m];
-      });
+      return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
     }
 
     function openLeadModal(item) {
