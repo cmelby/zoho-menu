@@ -1,25 +1,18 @@
-// api/_utils.js — OAuth + JSON helpers with correct domain mapping and verbose errors.
+// api/_utils.js — OAuth + JSON helpers (final)
 
-// 1) Normalize API domain (used for data APIs like inventory.zohoapis.com)
+// Normalize API domain (used for inventory.zohoapis.com and www.zohoapis.com)
 const RAW_API = process.env.ZOHO_BASE_DOMAIN || 'zohoapis.com';
 const ZOHO_BASE_DOMAIN = RAW_API.trim().replace(/^https?:\/\/(www\.)?/, '');
 
-// 2) Map API domain → Accounts domain (used ONLY for OAuth token endpoint)
-function apiToAccountsHost(apiDomain) {
-  // zohoapis.com -> zoho.com, zohoapis.eu -> zoho.eu, zohoapis.in -> zoho.in
-  return apiDomain.replace(/^zohoapis\./, 'zoho.');
-}
-
-const ACCOUNTS_HOST = apiToAccountsHost(ZOHO_BASE_DOMAIN);
+// Map API domain → Accounts domain (zohoapis.com → zoho.com, etc.)
+const ACCOUNTS_HOST = ZOHO_BASE_DOMAIN.replace(/^zohoapis\./, 'zoho.');
 
 let cachedAccessToken = null;
 let cachedExpiry = 0;
 
 async function getAccessToken() {
   const now = Date.now();
-  if (cachedAccessToken && now < cachedExpiry - 60_000) {
-    return cachedAccessToken;
-  }
+  if (cachedAccessToken && now < cachedExpiry - 60_000) return cachedAccessToken;
 
   const params = new URLSearchParams({
     refresh_token: process.env.ZOHO_REFRESH_TOKEN,
@@ -28,13 +21,13 @@ async function getAccessToken() {
     grant_type: 'refresh_token',
   });
 
+  // ✅ use backticks so ACCOUNTS_HOST is interpolated
   const tokenUrl = `https://accounts.${ACCOUNTS_HOST}/oauth/v2/token`;
 
   let res;
   try {
     res = await fetch(tokenUrl, { method: 'POST', body: params });
   } catch (e) {
-    // Surface the exact network problem the platform is hitting
     throw new Error(`Token fetch failed (${tokenUrl}) :: ${e?.message || e}`);
   }
 
@@ -53,10 +46,7 @@ async function readJson(req) {
   return new Promise((resolve, reject) => {
     let data = '';
     req.on('data', c => { data += c; });
-    req.on('end', () => {
-      try { resolve(data ? JSON.parse(data) : {}); }
-      catch (e) { reject(e); }
-    });
+    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}); } catch (e) { reject(e); } });
     req.on('error', reject);
   });
 }
