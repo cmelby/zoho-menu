@@ -1,12 +1,16 @@
-// api/_utils.js — OAuth + JSON helpers with correct domain mapping
+// api/_utils.js — OAuth + JSON helpers with correct domain mapping and verbose errors.
 
-// Normalize API domain: trim spaces + strip protocol just in case
+// 1) Normalize API domain (used for data APIs like inventory.zohoapis.com)
 const RAW_API = process.env.ZOHO_BASE_DOMAIN || 'zohoapis.com';
 const ZOHO_BASE_DOMAIN = RAW_API.trim().replace(/^https?:\/\/(www\.)?/, '');
 
-// Map API domain → Accounts domain
-// zohoapis.com → accounts.zoho.com, etc.
-const ACCOUNTS_HOST = ZOHO_BASE_DOMAIN.replace(/^zohoapis\./, 'zoho.');
+// 2) Map API domain → Accounts domain (used ONLY for OAuth token endpoint)
+function apiToAccountsHost(apiDomain) {
+  // zohoapis.com -> zoho.com, zohoapis.eu -> zoho.eu, zohoapis.in -> zoho.in
+  return apiDomain.replace(/^zohoapis\./, 'zoho.');
+}
+
+const ACCOUNTS_HOST = apiToAccountsHost(ZOHO_BASE_DOMAIN);
 
 let cachedAccessToken = null;
 let cachedExpiry = 0;
@@ -24,13 +28,19 @@ async function getAccessToken() {
     grant_type: 'refresh_token',
   });
 
-  // ✅ correct OAuth host
   const tokenUrl = `https://accounts.${ACCOUNTS_HOST}/oauth/v2/token`;
 
-  const res = await fetch(tokenUrl, { method: 'POST', body: params });
+  let res;
+  try {
+    res = await fetch(tokenUrl, { method: 'POST', body: params });
+  } catch (e) {
+    // Surface the exact network problem the platform is hitting
+    throw new Error(`Token fetch failed (${tokenUrl}) :: ${e?.message || e}`);
+  }
+
   if (!res.ok) {
     const txt = await res.text();
-    throw new Error(`Token refresh failed: ${res.status} ${txt}`);
+    throw new Error(`Token refresh failed (${tokenUrl}) :: ${res.status} ${txt}`);
   }
 
   const data = await res.json();
@@ -51,4 +61,4 @@ async function readJson(req) {
   });
 }
 
-module.exports = { getAccessToken, readJson, ZOHO_BASE_DOMAIN };
+module.exports = { getAccessToken, readJson, ZOHO_BASE_DOMAIN, ACCOUNTS_HOST };

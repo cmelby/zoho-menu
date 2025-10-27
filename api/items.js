@@ -1,4 +1,4 @@
-// api/items.js — returns Zoho Inventory items
+// api/items.js — returns Zoho Inventory items (supports ?page=&per_page=)
 const { getAccessToken, ZOHO_BASE_DOMAIN } = require('./_utils');
 const { ZOHO_ORG_ID } = process.env;
 
@@ -15,9 +15,12 @@ module.exports = async (req, res) => {
     if (req.query && req.query.page) url.searchParams.set('page', req.query.page);
     if (req.query && req.query.per_page) url.searchParams.set('per_page', req.query.per_page);
 
-    const apiRes = await fetch(url, {
-      headers: { Authorization: `Zoho-oauthtoken ${token}` },
-    });
+    let apiRes;
+    try {
+      apiRes = await fetch(url, { headers: { Authorization: `Zoho-oauthtoken ${token}` } });
+    } catch (e) {
+      return res.status(500).json({ error: `Inventory fetch failed (${url}) :: ${e?.message || e}` });
+    }
 
     const txt = await apiRes.text();
     try {

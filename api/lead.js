@@ -22,14 +22,17 @@ module.exports = async (req, res) => {
     lead.Description = `Product: ${productName}${notes ? `\nNotes: ${notes}` : ''}`;
 
     const url = `https://www.${ZOHO_BASE_DOMAIN}/crm/v2/Leads`;
-    const crmRes = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Zoho-oauthtoken ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ data: [lead], trigger: ['workflow'] }),
-    });
+
+    let crmRes;
+    try {
+      crmRes = await fetch(url, {
+        method: 'POST',
+        headers: { Authorization: `Zoho-oauthtoken ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: [lead], trigger: ['workflow'] }),
+      });
+    } catch (e) {
+      return res.status(500).json({ error: `CRM lead fetch failed (${url}) :: ${e?.message || e}` });
+    }
 
     const txt = await crmRes.text();
     try {
@@ -42,3 +45,4 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: String(err.message || err) });
   }
 };
+
