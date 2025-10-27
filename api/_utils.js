@@ -1,8 +1,12 @@
-// api/_utils.js — shared helpers for Zoho OAuth + JSON parsing
+// api/_utils.js — OAuth + JSON helpers with correct domain mapping
 
-// Normalize domain: trims spaces and strips protocol so you can safely build URLs.
-const RAW_DOMAIN = process.env.ZOHO_BASE_DOMAIN || 'zohoapis.com';
-const ZOHO_BASE_DOMAIN = RAW_DOMAIN.trim().replace(/^https?:\/\/(www\.)?/, '');
+// Normalize API domain: trim spaces + strip protocol just in case
+const RAW_API = process.env.ZOHO_BASE_DOMAIN || 'zohoapis.com';
+const ZOHO_BASE_DOMAIN = RAW_API.trim().replace(/^https?:\/\/(www\.)?/, '');
+
+// Map API domain → Accounts domain
+// zohoapis.com → accounts.zoho.com, etc.
+const ACCOUNTS_HOST = ZOHO_BASE_DOMAIN.replace(/^zohoapis\./, 'zoho.');
 
 let cachedAccessToken = null;
 let cachedExpiry = 0;
@@ -20,9 +24,10 @@ async function getAccessToken() {
     grant_type: 'refresh_token',
   });
 
-  const tokenUrl = `https://accounts.${ZOHO_BASE_DOMAIN}/oauth/v2/token`;
-  const res = await fetch(tokenUrl, { method: 'POST', body: params });
+  // ✅ correct OAuth host
+  const tokenUrl = `https://accounts.${ACCOUNTS_HOST}/oauth/v2/token`;
 
+  const res = await fetch(tokenUrl, { method: 'POST', body: params });
   if (!res.ok) {
     const txt = await res.text();
     throw new Error(`Token refresh failed: ${res.status} ${txt}`);

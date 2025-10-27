@@ -1,4 +1,4 @@
-// api/items.js — returns Zoho Inventory items (supports ?page=&per_page=)
+// api/items.js — returns Zoho Inventory items
 const { getAccessToken, ZOHO_BASE_DOMAIN } = require('./_utils');
 const { ZOHO_ORG_ID } = process.env;
 
@@ -24,7 +24,6 @@ module.exports = async (req, res) => {
       const json = JSON.parse(txt);
       return res.status(apiRes.status).json(json);
     } catch {
-      // If Zoho returns HTML/text on error, surface it so you can see the cause.
       return res.status(apiRes.status).send(txt);
     }
   } catch (err) {

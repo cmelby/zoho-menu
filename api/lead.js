@@ -1,6 +1,4 @@
-// api/lead.js — creates a Zoho CRM Lead from a product click
-// POST JSON: { email?, phone?, firstName?, lastName?, productName, notes? }
-
+// api/lead.js — creates a Zoho CRM Lead
 const { getAccessToken, readJson, ZOHO_BASE_DOMAIN } = require('./_utils');
 const { ZOHO_FIELD_API_NAME = 'Product_Interested_In' } = process.env;
 
@@ -14,7 +12,7 @@ module.exports = async (req, res) => {
     const { email, phone, firstName, lastName, productName, notes } = body || {};
 
     const lead = {
-      Last_Name: lastName || 'Website Lead',      // Last_Name is required by Zoho CRM
+      Last_Name: lastName || 'Website Lead',
       First_Name: firstName || undefined,
       Email: email || undefined,
       Phone: phone || undefined,
