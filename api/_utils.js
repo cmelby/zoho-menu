@@ -1,9 +1,15 @@
-// Normalize API domain
+// api/_utils.js — OAuth + JSON helpers (final)
+
+// API domain from env, sanitized:
 const RAW_API = process.env.ZOHO_BASE_DOMAIN || 'zohoapis.com';
 const ZOHO_BASE_DOMAIN = RAW_API.trim().replace(/^https?:\/\/(www\.)?/, '');
 
-// Map API domain → Accounts domain (zohoapis.com → zoho.com, etc.)
-const ACCOUNTS_HOST = ZOHO_BASE_DOMAIN.replace(/^zohoapis\./, 'zoho.');
+// Map API domain → Accounts + Inventory hosts:
+//   zohoapis.com → zoho.com
+//   zohoapis.eu  → zoho.eu
+//   zohoapis.in  → zoho.in
+const ACCOUNTS_HOST  = ZOHO_BASE_DOMAIN.replace(/^zohoapis\./, 'zoho.');
+const INVENTORY_HOST = ZOHO_BASE_DOMAIN.replace(/^zohoapis\./, 'zoho.');
 
 let cachedAccessToken = null;
 let cachedExpiry = 0;
@@ -16,10 +22,10 @@ async function getAccessToken() {
     refresh_token: process.env.ZOHO_REFRESH_TOKEN,
     client_id: process.env.ZOHO_CLIENT_ID,
     client_secret: process.env.ZOHO_CLIENT_SECRET,
-    grant_type: 'refresh_token'
+    grant_type: 'refresh_token',
   });
 
-  const tokenUrl = `https://accounts.${ACCOUNTS_HOST}/oauth/v2/token`; // backticks!
+  const tokenUrl = `https://accounts.${ACCOUNTS_HOST}/oauth/v2/token`;
 
   let res;
   try {
@@ -47,5 +53,10 @@ async function readJson(req) {
   });
 }
 
-module.exports = { getAccessToken, readJson, ZOHO_BASE_DOMAIN, ACCOUNTS_HOST };
-
+module.exports = {
+  getAccessToken,
+  readJson,
+  ZOHO_BASE_DOMAIN,     // e.g. zohoapis.com
+  ACCOUNTS_HOST,        // e.g. zoho.com
+  INVENTORY_HOST        // e.g. zoho.com
+};

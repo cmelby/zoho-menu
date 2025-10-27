@@ -1,4 +1,5 @@
-const { getAccessToken, ZOHO_BASE_DOMAIN } = require('./_utils');
+// api/items.js — fetch Inventory items
+const { getAccessToken, INVENTORY_HOST } = require('./_utils');
 const { ZOHO_ORG_ID } = process.env;
 
 module.exports = async (req, res) => {
@@ -7,7 +8,8 @@ module.exports = async (req, res) => {
 
     const token = await getAccessToken();
 
-    const url = new URL(`https://inventory.${ZOHO_BASE_DOMAIN}/api/v1/items`);
+    // ✅ Inventory lives on inventory.<zoho(.com|.eu|.in)>
+    const url = new URL(`https://inventory.${INVENTORY_HOST}/api/v1/items`);
     url.searchParams.set('organization_id', ZOHO_ORG_ID);
     if (req.query?.page) url.searchParams.set('page', req.query.page);
     if (req.query?.per_page) url.searchParams.set('per_page', req.query.per_page);
