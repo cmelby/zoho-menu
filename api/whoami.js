@@ -1,3 +1,4 @@
+// Lightweight health check against Inventory API
 import { getAccessToken, INVENTORY_HOST } from './_utils.js';
 
 export default async function handler(_req, res) {

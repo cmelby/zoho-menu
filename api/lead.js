@@ -1,4 +1,4 @@
-// api/lead.js — create Zoho CRM Lead
+// Create a Lead in Zoho CRM (uses zohoapis CRM endpoint)
 import { getAccessToken, readJson, ZOHO_BASE_DOMAIN } from './_utils.js';
 
 export default async function handler(req, res) {
@@ -7,27 +7,37 @@ export default async function handler(req, res) {
   }
   try {
     const token = await getAccessToken();
-    const body = await readJson(req);
+    const body  = await readJson(req);
     const { email, phone, firstName, lastName, productName, notes } = body || {};
 
     const lead = {
-      Last_Name: lastName || 'Website Lead',
-      First_Name: firstName || undefined,
-      Email: email || undefined,
-      Phone: phone || undefined,
+      Last_Name:   lastName || 'Website Lead', // required by Zoho CRM
+      First_Name:  firstName || undefined,
+      Email:       email || undefined,
+      Phone:       phone || undefined,
       Lead_Source: 'Website Menu',
-      Description: `Product: ${productName}${notes ? `\nNotes: ${notes}` : ''}`,
+      Description: `Product: ${productName}${notes ? `\nNotes: ${notes}` : ''}`
+      // If you added a custom field in CRM, set its API name via env var and include it here if needed.
+      // Example: [process.env.ZOHO_FIELD_API_NAME]: productName
     };
+    if (process.env.ZOHO_FIELD_API_NAME) {
+      lead[process.env.ZOHO_FIELD_API_NAME] = productName;
+    }
 
     const url = `https://www.${ZOHO_BASE_DOMAIN}/crm/v2/Leads`;
-    const crmRes = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Zoho-oauthtoken ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ data: [lead], trigger: ['workflow'] }),
-    });
+    let crmRes;
+    try {
+      crmRes = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: `Zoho-oauthtoken ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data: [lead], trigger: ['workflow'] })
+      });
+    } catch (e) {
+      return res.status(500).json({ error: `CRM lead fetch failed (${url}) :: ${e?.name || 'Error'} ${e?.code || ''} ${e?.message || e}` });
+    }
 
     const txt = await crmRes.text();
     try { res.status(crmRes.status).json(JSON.parse(txt)); }
@@ -36,4 +46,3 @@ export default async function handler(req, res) {
     res.status(500).json({ error: String(err.message || err) });
   }
 }
-

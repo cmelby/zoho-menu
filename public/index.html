@@ -46,18 +46,10 @@
   <div class="modal" id="leadModal">
     <div class="modal-card">
       <h2 id="modalTitle">Create Lead</h2>
-      <div class="row">
-        <input id="firstName" placeholder="First name (optional)" />
-      </div>
-      <div class="row" style="margin-top:8px;">
-        <input id="lastName" placeholder="Last name (required)" />
-      </div>
-      <div class="row" style="margin-top:8px;">
-        <input id="email" type="email" placeholder="Email (optional)" />
-      </div>
-      <div class="row" style="margin-top:8px;">
-        <input id="phone" placeholder="Phone (optional)" />
-      </div>
+      <div class="row"><input id="firstName" placeholder="First name (optional)" /></div>
+      <div class="row" style="margin-top:8px;"><input id="lastName" placeholder="Last name (required)" /></div>
+      <div class="row" style="margin-top:8px;"><input id="email" type="email" placeholder="Email (optional)" /></div>
+      <div class="row" style="margin-top:8px;"><input id="phone" placeholder="Phone (optional)" /></div>
       <div class="row" style="margin-top:8px;">
         <textarea id="notes" placeholder="Notes (optional)" style="width:100%; height:80px; border-radius: 10px; border: 1px solid #374151; background:#0f1115; color:#e5e7eb; padding:10px;"></textarea>
       </div>
@@ -127,7 +119,7 @@
         demoMode = true;
         allItems = DEMO_ITEMS;
         banner.style.display = 'block';
-        banner.innerHTML = '<span class="warn">Preview mode:</span> Showing mock products because the API is not responding. Once env vars are set and deployment updated, live items will load here.';
+        banner.innerHTML = '<span class="warn">Preview mode:</span> Showing mock products because the API did not return live data.';
       }
       render();
     }
@@ -183,7 +175,7 @@
       if (!lastName) { alert('Last name is required.'); return; }
 
       if (demoMode) {
-        alert('Demo mode: would create a Lead for ' + selectedProduct.name + '. Deploy with env vars to enable live CRM.');
+        alert('Demo mode: would create a Lead for ' + selectedProduct.name + '.');
         leadModal.style.display = 'none';
         selectedProduct = null;
         return;
@@ -191,35 +183,29 @@
 
       const payload = {
         firstName: firstNameEl.value.trim() || undefined,
-        lastName: lastName,
+        lastName,
         email: emailEl.value.trim() || undefined,
         phone: phoneEl.value.trim() || undefined,
         productName: selectedProduct.name,
-        notes: notesEl.value.trim() || undefined,
+        notes: notesEl.value.trim() || undefined
       };
       const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
       const json = await res.json();
       if (!res.ok) {
         alert('Lead creation failed: ' + (json.message || json.error || JSON.stringify(json)));
         return;
       }
-      const status = (json.data && json.data[0] && json.data[0].status) || 'success';
-      if (status.toLowerCase() === 'success') {
-        alert('Lead created successfully!');
-      } else {
-        alert('Lead API response: ' + JSON.stringify(json));
-      }
+      alert('Lead created successfully!');
       leadModal.style.display = 'none';
       selectedProduct = null;
     });
 
     search.addEventListener('input', render);
     refreshBtn.addEventListener('click', loadAll);
-
     loadAll();
   </script>
 </body>

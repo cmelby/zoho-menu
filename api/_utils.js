@@ -1,7 +1,10 @@
+// OAuth + helpers; correct domain mapping; detailed error messages
 import './_net.js';
 
 const RAW_API = process.env.ZOHO_BASE_DOMAIN || 'zohoapis.com';
 export const ZOHO_BASE_DOMAIN = RAW_API.trim().replace(/^https?:\/\/(www\.)?/, '');
+
+// OAuth host = accounts.zoho.{tld}; Inventory host = inventory.zohoapis.{tld}
 export const ACCOUNTS_HOST  = ZOHO_BASE_DOMAIN.replace(/^zohoapis\./, 'zoho.');
 export const INVENTORY_HOST = ZOHO_BASE_DOMAIN;
 
@@ -10,7 +13,7 @@ let cachedExpiry = 0;
 
 export async function getAccessToken() {
   const now = Date.now();
-  if (cachedAccessToken && now < cachedExpiry - 60000) return cachedAccessToken;
+  if (cachedAccessToken && now < cachedExpiry - 60_000) return cachedAccessToken;
 
   const params = new URLSearchParams({
     refresh_token: process.env.ZOHO_REFRESH_TOKEN,
@@ -27,6 +30,7 @@ export async function getAccessToken() {
   } catch (e) {
     throw new Error(`Token fetch failed (${tokenUrl}) :: ${e?.name || 'Error'} ${e?.code || ''} ${e?.message || e}`);
   }
+
   if (!res.ok) {
     const txt = await res.text();
     throw new Error(`Token refresh failed (${tokenUrl}) :: ${res.status} ${txt}`);

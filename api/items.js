@@ -1,3 +1,4 @@
+// Inventory items with org header + robust diagnostics
 import { getAccessToken, INVENTORY_HOST } from './_utils.js';
 
 export default async function handler(req, res) {
