@@ -1,12 +1,20 @@
-// OAuth + helpers; correct domain mapping; detailed error messages
+// Domain + OAuth helpers (ESM)
 import './_net.js';
 
 const RAW_API = process.env.ZOHO_BASE_DOMAIN || 'zohoapis.com';
+
+// e.g. "zohoapis.com"
 export const ZOHO_BASE_DOMAIN = RAW_API.trim().replace(/^https?:\/\/(www\.)?/, '');
 
-// OAuth host = accounts.zoho.{tld}; Inventory host = inventory.zohoapis.{tld}
-export const ACCOUNTS_HOST  = ZOHO_BASE_DOMAIN.replace(/^zohoapis\./, 'zoho.');
-export const INVENTORY_HOST = ZOHO_BASE_DOMAIN;
+// OAuth host must be accounts.zoho.{tld}
+export const ACCOUNTS_HOST = ZOHO_BASE_DOMAIN.replace(/^zohoapis\./, 'zoho.');
+
+// Unified apis host is www.zohoapis.{tld}
+export const APIS_HOST = `www.${ZOHO_BASE_DOMAIN}`;
+
+// Service bases
+export const INVENTORY_BASE = `https://${APIS_HOST}/inventory/v1`;
+export const CRM_BASE       = `https://${APIS_HOST}/crm/v2`;
 
 let cachedAccessToken = null;
 let cachedExpiry = 0;

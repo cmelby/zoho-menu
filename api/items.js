@@ -1,5 +1,5 @@
-// Inventory items with org header + robust diagnostics
-import { getAccessToken, INVENTORY_HOST } from './_utils.js';
+// List Zoho Inventory items (ESM)
+import { getAccessToken, INVENTORY_BASE } from './_utils.js';
 
 export default async function handler(req, res) {
   try {
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     const page     = req.query?.page ?? '1';
     const per_page = req.query?.per_page ?? '200';
 
-    const url = `https://inventory.${INVENTORY_HOST}/api/v1/items?page=${encodeURIComponent(page)}&per_page=${encodeURIComponent(per_page)}`;
+    const url = `${INVENTORY_BASE}/items?page=${encodeURIComponent(page)}&per_page=${encodeURIComponent(per_page)}`;
     const headers = {
       'Authorization': `Zoho-oauthtoken ${token}`,
       'X-com-zoho-inventory-organizationid': orgId,

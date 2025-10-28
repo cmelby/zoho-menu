@@ -1,5 +1,5 @@
-// Create a Lead in Zoho CRM (uses zohoapis CRM endpoint)
-import { getAccessToken, readJson, ZOHO_BASE_DOMAIN } from './_utils.js';
+// Create a Lead in Zoho CRM (ESM)
+import { getAccessToken, readJson, CRM_BASE } from './_utils.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,20 +11,18 @@ export default async function handler(req, res) {
     const { email, phone, firstName, lastName, productName, notes } = body || {};
 
     const lead = {
-      Last_Name:   lastName || 'Website Lead', // required by Zoho CRM
+      Last_Name:   lastName || 'Website Lead',
       First_Name:  firstName || undefined,
       Email:       email || undefined,
       Phone:       phone || undefined,
       Lead_Source: 'Website Menu',
       Description: `Product: ${productName}${notes ? `\nNotes: ${notes}` : ''}`
-      // If you added a custom field in CRM, set its API name via env var and include it here if needed.
-      // Example: [process.env.ZOHO_FIELD_API_NAME]: productName
     };
     if (process.env.ZOHO_FIELD_API_NAME) {
       lead[process.env.ZOHO_FIELD_API_NAME] = productName;
     }
 
-    const url = `https://www.${ZOHO_BASE_DOMAIN}/crm/v2/Leads`;
+    const url = `${CRM_BASE}/Leads`;
     let crmRes;
     try {
       crmRes = await fetch(url, {

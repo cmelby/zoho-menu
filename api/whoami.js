@@ -1,5 +1,5 @@
-// Lightweight health check against Inventory API
-import { getAccessToken, INVENTORY_HOST } from './_utils.js';
+// Quick org/route health check (ESM)
+import { getAccessToken, INVENTORY_BASE } from './_utils.js';
 
 export default async function handler(_req, res) {
   try {
@@ -7,7 +7,7 @@ export default async function handler(_req, res) {
     if (!orgId) return res.status(500).json({ error: 'Missing ZOHO_ORG_ID env var' });
 
     const token = await getAccessToken();
-    const url = `https://inventory.${INVENTORY_HOST}/api/v1/organizations`;
+    const url = `${INVENTORY_BASE}/organizations`;
     const headers = {
       'Authorization': `Zoho-oauthtoken ${token}`,
       'X-com-zoho-inventory-organizationid': orgId,
