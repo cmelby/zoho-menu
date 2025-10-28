@@ -1,4 +1,4 @@
-// api/items.js — lists Zoho Inventory items with org header + robust errors
+// api/items.js — lists Zoho Inventory items (IPv4 + header org id)
 import { getAccessToken, INVENTORY_HOST } from './_utils.js';
 
 export default async function handler(req, res) {
@@ -11,30 +11,29 @@ export default async function handler(req, res) {
     const page     = req.query?.page     ?? '1';
     const per_page = req.query?.per_page ?? '200';
 
-    // Use a *string* URL (not URL object) + include only simple query
     const url = `https://inventory.${INVENTORY_HOST}/api/v1/items?page=${encodeURIComponent(page)}&per_page=${encodeURIComponent(per_page)}`;
-
-    // Prefer the org header for zohoapis calls
     const headers = {
       'Authorization': `Zoho-oauthtoken ${token}`,
       'X-com-zoho-inventory-organizationid': orgId,
-      'Accept': 'application/json'
+      'Accept': 'application/json',
+      'User-Agent': 'genosismenu/1.0 (vercel-serverless; node20)'
     };
 
-    let apiRes;
+    let r;
     try {
-      apiRes = await fetch(url, { headers });
+      r = await fetch(url, { headers });
     } catch (e) {
-      return res.status(500).json({ error: `Inventory fetch failed (${url}) :: ${e?.message || e}` });
+      return res.status(500).json({
+        error: `Inventory fetch failed (${url}) :: ${e?.name || 'Error'} ${e?.code || ''} ${e?.message || e}`
+      });
     }
 
-    const txt = await apiRes.text();
+    const text = await r.text();
     try {
-      const json = JSON.parse(txt);
-      return res.status(apiRes.status).json(json);
+      const json = JSON.parse(text);
+      return res.status(r.status).json(json);
     } catch {
-      // If Zoho returned HTML/text, pass it through so we can read the reason
-      return res.status(apiRes.status).send(txt);
+      return res.status(r.status).send(text);
     }
   } catch (err) {
     return res.status(500).json({ error: String(err.message || err) });
