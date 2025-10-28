@@ -2,7 +2,11 @@
   "name": "zoho-menu-vercel",
   "version": "1.0.0",
   "private": true,
-  "engines": { "node": ">=18" },
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "undici": "^6.19.8"
+  },
   "scripts": {
     "dev": "npx serve public -l 5173"
   }
