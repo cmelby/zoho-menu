@@ -1,15 +1,17 @@
-const { ZOHO_BASE_DOMAIN, ACCOUNTS_HOST } = require('./_utils');
+// api/debug.js — environment + host diagnostics
+import { ZOHO_BASE_DOMAIN, ACCOUNTS_HOST, INVENTORY_HOST } from './_utils.js';
 
-module.exports = async (_req, res) => {
+export default async function handler(_req, res) {
   res.status(200).json({
     ZOHO_BASE_DOMAIN,
     ACCOUNTS_HOST,
-    HAS_CLIENT_ID: !!process.env.ZOHO_CLIENT_ID,
+    INVENTORY_HOST,
+    HAS_CLIENT_ID:     !!process.env.ZOHO_CLIENT_ID,
     HAS_CLIENT_SECRET: !!process.env.ZOHO_CLIENT_SECRET,
     HAS_REFRESH_TOKEN: !!process.env.ZOHO_REFRESH_TOKEN,
-    HAS_ORG_ID: !!process.env.ZOHO_ORG_ID,
+    HAS_ORG_ID:        !!process.env.ZOHO_ORG_ID,
     token_url: `https://accounts.${ACCOUNTS_HOST}/oauth/v2/token`,
-    items_base: `https://inventory.${ZOHO_BASE_DOMAIN}/api/v1/items`
+    items_base: `https://inventory.${INVENTORY_HOST}/api/v1/items`,
   });
-};
+}
 
