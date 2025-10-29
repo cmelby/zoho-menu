@@ -7,7 +7,7 @@
   <style>
     :root{
       --bg:#0b0c10; --panel:#111318; --stroke:#1f2937; --muted:#9ca3af; --text:#e5e7eb;
-      /* Gold accents to match your logo (tweak if you want) */
+      /* Gold accents to match logo */
       --accent1:#d4af37; --accent2:#b57f2a;
       --radius:16px;
       --header-h:78px;           /* full header height */
@@ -170,23 +170,42 @@
     })();
   </script>
 
-  <!-- ===== MENU APP: sections, weights, order flow ===== -->
+  <!-- ===== MENU APP: dynamic sections from Zoho "Category", weights, order flow ===== -->
   <script>
-    // ---------- Section config (edit to match Google Sheet tabs) ----------
-    const SECTION_ORDER = [
-      'Flower','Distillate','Isolates','Minors','Kratom','Tablets','Gummies','Other'
-    ];
-    const KEYWORD_MAP = [
-      { section:'Flower',     match:/flower|smalls|outdoor|indoor|greenhouse/i },
-      { section:'Distillate', match:/distillate|oil|thc?a distillate|cb[dt]\s*dist/i },
-      { section:'Isolates',   match:/isolate|crystal|powder|99%|isolate oil/i },
-      { section:'Minors',     match:/cbg|cbc|cbl|cbn|thcv|thcp|h4|hhc/i },
-      { section:'Kratom',     match:/kratom|7oh|free base|salt/i },
-      { section:'Tablets',    match:/tablet|tabs|mg\b/i },
-      { section:'Gummies',    match:/gummy|gummies|candy/i }
-    ];
+    /* ----------------- Config & helpers ----------------- */
 
-    // ---------- UI refs ----------
+    // If you ever want to disable grouping temporarily, set false:
+    const GROUP_BY_SECTION = true;
+
+    // Normalize missing custom_fields to []
+    function safeCustomFields(x){
+      return Array.isArray(x?.custom_fields) ? x.custom_fields : [];
+    }
+
+    // Prefer Zoho *custom field* named "Category" (label or API name), then built-ins, else "Other"
+    function getSection(item){
+      const cfs = item.custom_fields || [];
+      const catCf = cfs.find(f => /^(category)$/i.test((f.label || f.api_name || '').trim()));
+      if (catCf && catCf.value) return String(catCf.value).trim();
+
+      if (item.category_name) return item.category_name;
+      if (item.item_type)     return item.item_type;
+      return 'Other';
+    }
+
+    // Build buckets, order alphabetically by default
+    function buildSections(items){
+      const buckets = new Map();
+      for (const it of items){
+        const sec = getSection(it);
+        if (!buckets.has(sec)) buckets.set(sec, []);
+        buckets.get(sec).push(it);
+      }
+      const ordered = Array.from(buckets.keys()).sort((a,b)=> a.localeCompare(b));
+      return { ordered, buckets };
+    }
+
+    // UI refs
     const grid       = document.getElementById('grid');
     const banner     = document.getElementById('banner');
     const search     = document.getElementById('search');
@@ -203,7 +222,7 @@
     const createLeadBtn = document.getElementById('createLeadBtn');
     const cancelBtn     = document.getElementById('cancelBtn');
 
-    // ---------- State ----------
+    // State
     let allItems = [];
     let preview  = false;
     let selectedProduct = null;
@@ -236,7 +255,7 @@
             sku: x.sku || x.item_name || '',
             category_name: x.category_name || '',
             item_type: x.item_type || '',
-            custom_fields: x.custom_fields || null,
+            custom_fields: safeCustomFields(x),
             weight_options: (x.weight_options || '').trim()
           }));
           items = items.concat(chunk);
@@ -258,39 +277,6 @@
     function escapeHtml(s){return String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
     const DEFAULT_WEIGHTS = ['250 g','500 g','1 kg','5 kg','10 kg'];
     function parseWeights(csv){ if(!csv) return DEFAULT_WEIGHTS; const a=csv.split(',').map(s=>s.trim()).filter(Boolean); return a.length?a:DEFAULT_WEIGHTS; }
-
-    // Prefer Zoho custom field "Menu Section" > category > item_type > keyword map > Other
-    function getSection(item){
-      if (item.custom_fields && Array.isArray(item.custom_fields)) {
-        const cf = item.custom_fields.find(f =>
-          /menu[\s_]*section/i.test(f.label || f.api_name || '')
-        );
-        if (cf && cf.value) return cf.value;
-      }
-      if (item.category_name) return item.category_name;
-      if (item.item_type)     return item.item_type;
-
-      const hay = `${item.name} ${item.sku}`.toLowerCase();
-      const hit = KEYWORD_MAP.find(r => r.match.test(hay));
-      return hit ? hit.section : 'Other';
-    }
-
-    function buildSections(items){
-      const buckets = new Map();
-      items.forEach(it => {
-        const sec = getSection(it);
-        if (!buckets.has(sec)) buckets.set(sec, []);
-        buckets.get(sec).push(it);
-      });
-
-      const present = Array.from(buckets.keys());
-      const ordered = [
-        ...SECTION_ORDER.filter(s => present.includes(s)),
-        ...present.filter(s => !SECTION_ORDER.includes(s)).sort((a,b)=>a.localeCompare(b))
-      ];
-
-      return { ordered, buckets };
-    }
 
     function createCard(item){
       const node = document.createElement('div');
@@ -328,16 +314,28 @@
 
     function render(){
       const q = (search.value||'').toLowerCase();
-      const filtered = allItems.filter(i => i.name.toLowerCase().includes(q) || (i.sku||'').toLowerCase().includes(q));
+      const filtered = allItems.filter(i =>
+        i.name.toLowerCase().includes(q) || (i.sku||'').toLowerCase().includes(q)
+      );
+
+      if (!GROUP_BY_SECTION){
+        // simple grid (no headers)
+        const nav = document.getElementById('section-nav'); if (nav) nav.remove();
+        grid.innerHTML = '';
+        if (!filtered.length) { grid.innerHTML = '<div class="card">No products found.</div>'; return; }
+        const list = document.createElement('div'); list.className='grid';
+        filtered.forEach(item => list.appendChild(createCard(item)));
+        grid.appendChild(list);
+        return;
+      }
 
       const { ordered, buckets } = buildSections(filtered);
 
       // Sticky section nav just below header
-      const navId = 'section-nav';
-      let nav = document.getElementById(navId);
+      let nav = document.getElementById('section-nav');
       if (!nav) {
         nav = document.createElement('div');
-        nav.id = navId;
+        nav.id = 'section-nav';
         nav.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--stroke);position:sticky;top:calc(var(--header-h-compact));background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:9';
         document.body.insertBefore(nav, document.querySelector('.content'));
       }
@@ -399,8 +397,10 @@
         email:     emailEl.value.trim(),
         phone:     phoneEl.value.trim(),
         productName: selectedProduct.name,
-        // Include weight in notes so it’s captured server-side
-        notes: (notesEl.value||'').trim() ? `Weight: ${selectedWeight}\n${notesEl.value.trim()}` : `Weight: ${selectedWeight}`
+        // Include weight choice in notes
+        notes: (notesEl.value||'').trim()
+          ? `Weight: ${selectedWeight}\n${notesEl.value.trim()}`
+          : `Weight: ${selectedWeight}`
       };
 
       const res = await fetch('/api/lead', {
@@ -421,3 +421,4 @@
   </script>
 </body>
 </html>
+
