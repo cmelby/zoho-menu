@@ -7,79 +7,98 @@
   <style>
     :root{
       --bg:#0b0c10; --panel:#111318; --stroke:#1f2937; --muted:#9ca3af; --text:#e5e7eb;
-      /* Gold accents (tweak to match logo exactly) */
-      --accent1:#d4af37; /* light gold */
-      --accent2:#b57f2a; /* deep gold  */
+      /* Gold accents to match your logo (tweak if you want) */
+      --accent1:#d4af37; --accent2:#b57f2a;
       --radius:16px;
+      --header-h:78px;           /* full header height */
+      --header-h-compact:64px;   /* scrolled height */
+      --logo-h:56px;             /* full logo height (desktop) */
+      --logo-h-compact:42px;     /* scrolled logo height */
     }
+    @media (max-width:640px){
+      :root{ --header-h:72px; --header-h-compact:60px; --logo-h:52px; --logo-h-compact:42px; }
+    }
+
     html,body{height:100%}
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:var(--bg);color:var(--text)}
 
-    /* HEADER */
+    /* ===== HEADER (dynamic) ===== */
+    .header-wrap{ position:sticky; top:0; z-index:50; backdrop-filter: blur(8px); }
     .header{
-      display:flex;align-items:center;gap:12px;
-      padding:14px 20px;position:sticky;top:0;z-index:10;
-      background:rgba(11,12,16,.9);backdrop-filter:blur(8px);
-      border-bottom:1px solid var(--stroke)
+      height:var(--header-h);
+      display:flex; align-items:center; gap:12px;
+      padding:12px 20px;
+      background:rgba(11,12,16,.92);
+      border-bottom:1px solid var(--stroke);
+      transition: height .18s ease, padding .18s ease, justify-content .18s ease;
     }
-    .logo{height:34px;width:auto;display:block}
-    .brandline{font-size:14px;color:var(--text);letter-spacing:.02em}
-    .brandline .muted{color:var(--muted)}
+    .header__left, .header__center, .header__right{ display:flex; align-items:center; gap:12px; }
+    .header__left{ flex: 1 1 33%; }
+    .header__center{ flex: 1 1 34%; justify-content:center; }
+    .header__right{ flex: 1 1 33%; justify-content:flex-end; }
+    .logo{ height:var(--logo-h); width:auto; display:block; transition: height .18s ease, transform .18s ease, filter .18s ease; }
+    .brandline{ font-size:14px; color:var(--text); letter-spacing:.02em; white-space:nowrap }
+    .brandline .muted{ color:var(--muted) }
 
-    /* TOOLBAR */
-    .toolbar{display:flex;gap:10px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--stroke)}
+    /* Centered state on scroll */
+    .header--centered .header{ height:var(--header-h-compact); }
+    .header--centered .logo{ height:var(--logo-h-compact); }
+    .header--centered .header__left,
+    .header--centered .header__right{ visibility:hidden; width:0; flex:0 0 0; }
+    .header--centered .brandline{ display:none; }
+
+    /* ===== TOOLBAR ===== */
+    .toolbar{
+      display:flex;gap:10px;align-items:center;padding:12px 20px;
+      border-bottom:1px solid var(--stroke); background:rgba(11,12,16,.92)
+    }
     input,select,button{border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px 12px}
     button{cursor:pointer;background:#1f2937;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
     button:hover{background:#2b3648}
     .content{padding:20px}
 
-    /* GRID + CARDS */
+    /* ===== GRID + CARDS ===== */
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
     .card{
       background:var(--panel);border:1px solid var(--stroke);border-radius:var(--radius);padding:16px;
-      box-shadow:0 10px 20px rgba(0,0,0,.25);display:flex;flex-direction:column;min-height:260px
+      box-shadow:0 10px 20px rgba(0,0,0,.25);display:flex;flex-direction:column;min-height:260px;
+      transition:border-color .15s ease, box-shadow .15s ease;
     }
-    .card:hover{
-      border-color:var(--accent1);
-      box-shadow:0 0 0 1px var(--accent1),0 10px 22px rgba(0,0,0,.28)
-    }
+    .card:hover{ border-color:var(--accent1); box-shadow:0 0 0 1px var(--accent1),0 10px 22px rgba(0,0,0,.28) }
     .title{font-size:18px;margin:0 0 6px;line-height:1.2}
     .price{font-weight:600;margin:0 0 10px}
-    .desc{font-size:13px;color:var(--muted);margin:0 0 10px;
-      display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .desc{
+      font-size:13px;color:var(--muted);margin:0 0 10px;
+      display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden
+    }
     .row{display:flex;gap:8px;align-items:center}
     .row-end{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px}
     .sku{font-size:11px;color:var(--muted);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-    /* Controls on card */
     .select{
-      width:100%;
-      border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:8px 10px;
-      transition:border-color .15s ease,box-shadow .15s ease
+      width:100%; border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:8px 10px;
+      transition:border-color .15s ease, box-shadow .15s ease
     }
     .select:focus{outline:none;border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
 
-    /* CTA button */
-    .cta{
-      padding:10px 12px;border:1px solid var(--stroke);background:#0f1115
-    }
+    .cta{ padding:10px 12px;border:1px solid var(--stroke);background:#0f1115 }
     .cta:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
     .cta[disabled]{opacity:.55;cursor:not-allowed}
 
-    /* Banner for preview/errors */
-    .banner{
-      background:#1f2937;border:1px solid var(--stroke);padding:10px 12px;border-radius:12px;margin:12px 20px 0;font-size:12px;color:#d1d5db
-    }
+    /* ===== BANNER ===== */
+    .banner{background:#1f2937;border:1px solid var(--stroke);padding:10px 12px;border-radius:12px;margin:12px 20px 0;font-size:12px;color:#d1d5db}
     .warn{color:var(--accent1);font-weight:600}
 
-    /* MODAL */
+    /* ===== SECTION NAV ===== */
+    #section-nav a{ font-size:12px;color:var(--muted);padding:6px 10px;border:1px solid var(--stroke);border-radius:10px;text-decoration:none; }
+    #section-nav a:hover{ border-color:var(--accent1) }
+
+    /* ===== MODAL ===== */
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center}
     .modal-card{width:100%;max-width:480px;background:#0f1115;border:1px solid var(--stroke);border-radius:var(--radius);padding:18px}
     .modal-card h2{margin:0 0 12px}
     .modal .row{display:flex;gap:8px;margin-top:8px}
-    .modal input,.modal textarea{
-      width:100%;border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px
-    }
+    .modal input,.modal textarea{width:100%;border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px}
     .modal input:focus,.modal textarea:focus{outline:none;border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
     .modal textarea{height:90px}
     .modal .btn{padding:10px 12px;border:1px solid var(--stroke);background:#0f1115}
@@ -87,16 +106,22 @@
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <div class="header">
-    <img src="/logo-genosis.png" alt="Genosis" class="logo" />
-    <div class="brandline"><span class="muted">Product Menu</span></div>
+  <!-- ===== DYNAMIC HEADER ===== -->
+  <div class="header-wrap" id="headerWrap">
+    <div class="header" id="header">
+      <div class="header__left"></div>
+      <div class="header__center">
+        <img src="/logo-genosis.png" alt="Genosis" class="logo" id="logo" />
+        <div class="brandline"><span class="muted">Product Menu</span></div>
+      </div>
+      <div class="header__right"></div>
+    </div>
   </div>
 
   <!-- Optional banner -->
   <div class="banner" id="banner" style="display:none;"></div>
 
-  <!-- Toolbar -->
+  <!-- ===== TOOLBAR ===== -->
   <div class="toolbar">
     <input id="search" placeholder="Search products..." />
     <select id="perPage" title="Items per load">
@@ -107,11 +132,12 @@
     <button id="refresh">Refresh</button>
   </div>
 
+  <!-- ===== CONTENT ===== -->
   <div class="content">
     <div class="grid" id="grid"></div>
   </div>
 
-  <!-- Modal -->
+  <!-- ===== MODAL ===== -->
   <div class="modal" id="leadModal">
     <div class="modal-card">
       <h2 id="modalTitle">Place order</h2>
@@ -127,35 +153,68 @@
     </div>
   </div>
 
+  <!-- ===== HEADER SCROLL BEHAVIOR ===== -->
   <script>
-    // Fallback demo data (only if API fails)
-    const DEMO_ITEMS = [
-      { id:'1', name:'Free Base 0.63%', rate:3800, description:'Demo item', sku:'Kratom_&_7OH_0.63' },
-      { id:'2', name:'Free Base 0.7%', rate:4800, description:'Demo item', sku:'Kratom_&_7OH_0.7' },
-      { id:'3', name:'Free Base 0.8%', rate:5100, description:'Demo item', sku:'Kratom_&_7OH_0.8' },
-      { id:'4', name:'Free Base 0.88%', rate:5700, description:'Demo item', sku:'Kratom_&_7OH_0.88' }
+    (function(){
+      const headerWrap = document.getElementById('headerWrap');
+      let centered = false;
+      function onScroll(){
+        const shouldCenter = window.scrollY > 40;
+        if (shouldCenter !== centered){
+          centered = shouldCenter;
+          headerWrap.classList.toggle('header--centered', centered);
+        }
+      }
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive:true });
+    })();
+  </script>
+
+  <!-- ===== MENU APP: sections, weights, order flow ===== -->
+  <script>
+    // ---------- Section config (edit to match Google Sheet tabs) ----------
+    const SECTION_ORDER = [
+      'Flower','Distillate','Isolates','Minors','Kratom','Tablets','Gummies','Other'
+    ];
+    const KEYWORD_MAP = [
+      { section:'Flower',     match:/flower|smalls|outdoor|indoor|greenhouse/i },
+      { section:'Distillate', match:/distillate|oil|thc?a distillate|cb[dt]\s*dist/i },
+      { section:'Isolates',   match:/isolate|crystal|powder|99%|isolate oil/i },
+      { section:'Minors',     match:/cbg|cbc|cbl|cbn|thcv|thcp|h4|hhc/i },
+      { section:'Kratom',     match:/kratom|7oh|free base|salt/i },
+      { section:'Tablets',    match:/tablet|tabs|mg\b/i },
+      { section:'Gummies',    match:/gummy|gummies|candy/i }
     ];
 
-    const grid = document.getElementById('grid');
-    const banner = document.getElementById('banner');
-    const search = document.getElementById('search');
-    const perPage = document.getElementById('perPage');
+    // ---------- UI refs ----------
+    const grid       = document.getElementById('grid');
+    const banner     = document.getElementById('banner');
+    const search     = document.getElementById('search');
+    const perPage    = document.getElementById('perPage');
     const refreshBtn = document.getElementById('refresh');
 
-    const leadModal = document.getElementById('leadModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const firstNameEl = document.getElementById('firstName');
-    const lastNameEl = document.getElementById('lastName');
-    const emailEl = document.getElementById('email');
-    const phoneEl = document.getElementById('phone');
-    const notesEl = document.getElementById('notes');
+    const leadModal     = document.getElementById('leadModal');
+    const modalTitle    = document.getElementById('modalTitle');
+    const firstNameEl   = document.getElementById('firstName');
+    const lastNameEl    = document.getElementById('lastName');
+    const emailEl       = document.getElementById('email');
+    const phoneEl       = document.getElementById('phone');
+    const notesEl       = document.getElementById('notes');
     const createLeadBtn = document.getElementById('createLeadBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
+    const cancelBtn     = document.getElementById('cancelBtn');
 
+    // ---------- State ----------
     let allItems = [];
+    let preview  = false;
     let selectedProduct = null;
-    let preview = false;
-    let selectedWeight = '';
+    let selectedWeight  = '';
+
+    const DEMO_ITEMS = [
+      { id:'1', name:'Free Base 0.63%', rate:3800, description:'Demo item', sku:'Kratom_&_7OH_0.63' },
+      { id:'2', name:'Free Base 0.7%',  rate:4800, description:'Demo item', sku:'Kratom_&_7OH_0.7'  },
+      { id:'3', name:'Free Base 0.8%',  rate:5100, description:'Demo item', sku:'Kratom_&_7OH_0.8'  },
+      { id:'4', name:'Free Base 0.88%', rate:5700, description:'Demo item', sku:'Kratom_&_7OH_0.88' }
+    ];
 
     async function fetchItems(page=1){
       const res = await fetch(`/api/items?page=${page}&per_page=${perPage.value}`);
@@ -175,7 +234,9 @@
             rate: x.rate,
             description: (x.description||'').trim(),
             sku: x.sku || x.item_name || '',
-            // if you later store a custom field "weight_options" (CSV), it will be used
+            category_name: x.category_name || '',
+            item_type: x.item_type || '',
+            custom_fields: x.custom_fields || null,
             weight_options: (x.weight_options || '').trim()
           }));
           items = items.concat(chunk);
@@ -189,64 +250,121 @@
         preview = true;
         allItems = DEMO_ITEMS;
         banner.style.display='block';
-        banner.innerHTML='<span class="warn">Preview mode:</span> Showing mock products because the API did not return live data.';
+        banner.innerHTML='<span class="warn">Preview mode:</span> Using sample products (API did not return live data).';
       }
       render();
     }
 
     function escapeHtml(s){return String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-
-    // Default weight list; override if item carries a custom field "weight_options"
     const DEFAULT_WEIGHTS = ['250 g','500 g','1 kg','5 kg','10 kg'];
+    function parseWeights(csv){ if(!csv) return DEFAULT_WEIGHTS; const a=csv.split(',').map(s=>s.trim()).filter(Boolean); return a.length?a:DEFAULT_WEIGHTS; }
 
-    function parseWeights(csv){
-      if(!csv) return DEFAULT_WEIGHTS;
-      const arr = csv.split(',').map(s=>s.trim()).filter(Boolean);
-      return arr.length ? arr : DEFAULT_WEIGHTS;
+    // Prefer Zoho custom field "Menu Section" > category > item_type > keyword map > Other
+    function getSection(item){
+      if (item.custom_fields && Array.isArray(item.custom_fields)) {
+        const cf = item.custom_fields.find(f =>
+          /menu[\s_]*section/i.test(f.label || f.api_name || '')
+        );
+        if (cf && cf.value) return cf.value;
+      }
+      if (item.category_name) return item.category_name;
+      if (item.item_type)     return item.item_type;
+
+      const hay = `${item.name} ${item.sku}`.toLowerCase();
+      const hit = KEYWORD_MAP.find(r => r.match.test(hay));
+      return hit ? hit.section : 'Other';
+    }
+
+    function buildSections(items){
+      const buckets = new Map();
+      items.forEach(it => {
+        const sec = getSection(it);
+        if (!buckets.has(sec)) buckets.set(sec, []);
+        buckets.get(sec).push(it);
+      });
+
+      const present = Array.from(buckets.keys());
+      const ordered = [
+        ...SECTION_ORDER.filter(s => present.includes(s)),
+        ...present.filter(s => !SECTION_ORDER.includes(s)).sort((a,b)=>a.localeCompare(b))
+      ];
+
+      return { ordered, buckets };
+    }
+
+    function createCard(item){
+      const node = document.createElement('div');
+      node.className='card';
+      const weights = parseWeights(item.weight_options);
+
+      node.innerHTML = `
+        <h3 class="title">${escapeHtml(item.name)}</h3>
+        <div class="price">$${Number(item.rate||0).toLocaleString()}</div>
+        <p class="desc">${escapeHtml(item.description||'')}</p>
+
+        <div class="row">
+          <select class="select weight-select" aria-label="Select weight">
+            <option value="">Select weight</option>
+            ${weights.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="row-end">
+          <span class="sku" title="${escapeHtml(item.sku||'')}">SKU: ${escapeHtml(item.sku||'')}</span>
+          <button class="cta place-btn" disabled>Place order</button>
+        </div>
+      `;
+
+      const weightSel = node.querySelector('.weight-select');
+      const placeBtn  = node.querySelector('.place-btn');
+      weightSel.addEventListener('change', ()=>{ placeBtn.disabled = !weightSel.value; });
+      placeBtn.addEventListener('click', ()=>{
+        if(!weightSel.value){ alert('Please choose a weight.'); return; }
+        openLeadModal(item, weightSel.value);
+      });
+
+      return node;
     }
 
     function render(){
       const q = (search.value||'').toLowerCase();
       const filtered = allItems.filter(i => i.name.toLowerCase().includes(q) || (i.sku||'').toLowerCase().includes(q));
-      grid.innerHTML = '';
-      if(!filtered.length){ grid.innerHTML='<div class="card">No products found.</div>'; return; }
 
-      for(const item of filtered){
-        const card = document.createElement('div');
-        card.className='card';
+      const { ordered, buckets } = buildSections(filtered);
 
-        // weight options
-        const weights = parseWeights(item.weight_options);
-
-        card.innerHTML = ''
-          + '<h3 class="title">' + escapeHtml(item.name) + '</h3>'
-          + '<div class="price">$' + Number(item.rate||0).toLocaleString() + '</div>'
-          + '<p class="desc">' + escapeHtml(item.description) + '</p>'
-          + '<div class="row">'
-          +   '<select class="select weight-select" aria-label="Select weight">'
-          +     '<option value="">Select weight</option>'
-          +     (weights.map(function(w){ return '<option value="' + escapeHtml(w) + '">' + escapeHtml(w) + '</option>'; }).join(''))
-          +   '</select>'
-          + '</div>'
-          + '<div class="row-end">'
-          +   '<span class="sku" title="' + escapeHtml(item.sku||'') + '">SKU: ' + escapeHtml(item.sku||'') + '</span>'
-          +   '<button class="cta place-btn" disabled>Place order</button>'
-          + '</div>';
-
-        const weightSel = card.querySelector('.weight-select');
-        const placeBtn  = card.querySelector('.place-btn');
-
-        weightSel.addEventListener('change', ()=>{
-          placeBtn.disabled = !weightSel.value;
-        });
-
-        placeBtn.addEventListener('click', ()=>{
-          if(!weightSel.value){ alert('Please choose a weight.'); return; }
-          openLeadModal(item, weightSel.value);
-        });
-
-        grid.appendChild(card);
+      // Sticky section nav just below header
+      const navId = 'section-nav';
+      let nav = document.getElementById(navId);
+      if (!nav) {
+        nav = document.createElement('div');
+        nav.id = navId;
+        nav.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--stroke);position:sticky;top:calc(var(--header-h-compact));background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:9';
+        document.body.insertBefore(nav, document.querySelector('.content'));
       }
+      nav.innerHTML = '';
+      ordered.forEach(sec => {
+        const a = document.createElement('a');
+        a.textContent = sec;
+        a.href = `#sec-${encodeURIComponent(sec)}`;
+        nav.appendChild(a);
+      });
+
+      grid.innerHTML = '';
+      if (!ordered.length) { grid.innerHTML = '<div class="card">No products found.</div>'; return; }
+
+      ordered.forEach(sec => {
+        const items = buckets.get(sec) || [];
+        const header = document.createElement('h2');
+        header.id = `sec-${encodeURIComponent(sec)}`;
+        header.textContent = sec;
+        header.style.cssText = 'font-size:18px;margin:14px 0 8px 4px;color:var(--text);border-left:3px solid var(--accent1);padding-left:10px;';
+        grid.appendChild(header);
+
+        const sectionGrid = document.createElement('div');
+        sectionGrid.className = 'grid';
+        items.forEach(item => sectionGrid.appendChild(createCard(item)));
+        grid.appendChild(sectionGrid);
+      });
     }
 
     function openLeadModal(item, weight){
@@ -258,8 +376,7 @@
     }
 
     cancelBtn.addEventListener('click', ()=>{
-      leadModal.style.display='none';
-      selectedProduct=null; selectedWeight='';
+      leadModal.style.display='none'; selectedProduct=null; selectedWeight='';
     });
 
     createLeadBtn.addEventListener('click', async ()=>{
@@ -267,9 +384,9 @@
 
       // required fields
       if(!firstNameEl.value.trim()){ firstNameEl.focus(); return alert('Please enter your first name.'); }
-      if(!lastNameEl.value.trim()){ lastNameEl.focus(); return alert('Please enter your last name.'); }
-      if(!emailEl.value.trim()){ emailEl.focus(); return alert('Please enter your email.'); }
-      if(!phoneEl.value.trim()){ phoneEl.focus(); return alert('Please enter your phone.'); }
+      if(!lastNameEl.value.trim()){  lastNameEl.focus();  return alert('Please enter your last name.'); }
+      if(!emailEl.value.trim()){     emailEl.focus();     return alert('Please enter your email.'); }
+      if(!phoneEl.value.trim()){     phoneEl.focus();     return alert('Please enter your phone.'); }
 
       if(preview){
         alert(`Demo mode: would place order for ${selectedProduct.name} (${selectedWeight}).`);
@@ -282,13 +399,12 @@
         email:     emailEl.value.trim(),
         phone:     phoneEl.value.trim(),
         productName: selectedProduct.name,
+        // Include weight in notes so it’s captured server-side
         notes: (notesEl.value||'').trim() ? `Weight: ${selectedWeight}\n${notesEl.value.trim()}` : `Weight: ${selectedWeight}`
       };
 
       const res = await fetch('/api/lead', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
       });
       const json = await res.json().catch(()=> ({}));
       if(!res.ok){ return alert('Request failed: ' + (json.message || json.error || res.status)); }
@@ -299,6 +415,8 @@
 
     search.addEventListener('input', render);
     refreshBtn.addEventListener('click', loadAll);
+
+    // Kick things off
     loadAll();
   </script>
 </body>
