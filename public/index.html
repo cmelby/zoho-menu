@@ -33,9 +33,10 @@
     }
   .header__left,.header__center,.header__right{display:flex;align-items:center;gap:12px;}
   /* left column defines the page content left edge (matches centered max-width) */
-  .header__left{flex:0 0 320px;justify-content:flex-start;padding-left:20px}
+  /* compute the left offset to match the centered max-width container (1200px) */
+  .header__left{flex:0 0 320px;justify-content:flex-start;padding-left: max(20px, calc(50% - 600px + 20px));}
   .header__center{flex:1 1 auto;position:relative;display:flex;justify-content:center}
-  .header__right{flex:0 0 320px;justify-content:flex-end;padding-right:20px}
+  .header__right{flex:0 0 320px;justify-content:flex-end;padding-right: max(20px, calc(50% - 600px + 20px));}
   /* visually center the logo over the header while other items align to the left/right columns */
   .logo{height:var(--logo-h);width:auto;display:block;transition:height .18s ease;position:absolute;left:50%;transform:translateX(-50%);top:50%;transform:translate(-50%,-50%)}
   .brandline{font-size:14px;color:var(--text);display:flex;align-items:center;gap:8px;font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -58,7 +59,9 @@
   .header--centered .brandline{display:flex;}
 
     /* ===== TOOLBAR ===== */
-  .toolbar{display:flex;gap:10px;align-items:center;padding:10px 20px;max-width:1200px;margin:0 auto;background:transparent;position:relative;z-index:130}
+  .toolbar{display:flex;gap:10px;align-items:center;padding:10px 0;max-width:1200px;margin:0 auto;background:transparent;position:relative;z-index:130}
+  /* align toolbar content to the same left edge as the header__left */
+  .toolbar{padding-left: max(20px, calc(50% - 600px + 20px)); padding-right: max(20px, calc(50% - 600px + 20px));}
     input,select,button{border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px 12px}
     button{cursor:pointer;background:#1f2937;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
     button:hover{background:#2b3648}
@@ -110,7 +113,9 @@
   /* keep nav items on one line and allow horizontal scroll to avoid wrapping */
   /* keep the nav visually below the header/toolbar and restrict it to one row */
   /* align nav with left column by using same left padding as header__left */
-  #section-nav{display:flex;gap:10px;flex-wrap:nowrap;overflow-x:auto;padding:8px 20px;max-width:1200px;margin:0 auto;align-items:center;position:relative;z-index:110;max-height:var(--section-nav-h);overflow-y:hidden}
+  #section-nav{display:flex;gap:10px;flex-wrap:nowrap;overflow-x:auto;padding:8px 0;max-width:1200px;margin:0 auto;align-items:center;position:relative;z-index:110;max-height:var(--section-nav-h);overflow-y:hidden}
+  /* align nav to the same left edge as header and toolbar */
+  #section-nav{padding-left: max(20px, calc(50% - 600px + 20px)); padding-right: max(20px, calc(50% - 600px + 20px));}
   #section-nav::-webkit-scrollbar{height:8px}
   #section-nav{scrollbar-width:thin}
     #section-nav a{font-size:12px;color:var(--muted);padding:6px 10px;border:1px solid var(--stroke);border-radius:10px;text-decoration:none;display:inline-block;white-space:nowrap}
