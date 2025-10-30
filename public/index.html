@@ -57,7 +57,8 @@
     input,select,button{border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px 12px}
     button{cursor:pointer;background:#1f2937;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
     button:hover{background:#2b3648}
-  .content{padding:20px}
+  /* add top padding so content isn't covered by the fixed header + section nav */
+  .content{padding:20px;padding-top:calc(var(--header-h) + var(--section-nav-h) + 8px)}
 
     /* ===== CARDS ===== */
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
@@ -98,7 +99,7 @@
 
   /* ===== SECTION NAV ===== */
   /* make the section nav fixed so it stays visible as you scroll */
-  #section-nav{display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--stroke);position:sticky;top:var(--header-h);background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:90}
+  #section-nav{display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--stroke);position:fixed;top:var(--header-h);left:0;right:0;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:95;align-items:center}
     #section-nav a{font-size:12px;color:var(--muted);padding:6px 10px;border:1px solid var(--stroke);border-radius:10px;text-decoration:none}
     #section-nav a:hover{border-color:var(--accent1)}
 
@@ -176,6 +177,41 @@
         if(shouldCenter!==centered){ centered=shouldCenter; headerWrap.classList.toggle('header--centered', centered); }
       }
       onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+    })();
+  </script>
+
+  <script>
+    // Ensure the fixed section nav sits immediately under the header and that
+    // page content has enough top padding so nothing is overlapped even when
+    // the nav wraps to multiple rows.
+    (function(){
+      const header = document.getElementById('header');
+      const nav = document.getElementById('section-nav');
+      const content = document.querySelector('.content');
+
+      function refreshLayout(){
+        if(!header || !nav || !content) return;
+        // measure header height (accounts for compact state)
+        const headerHeight = header.offsetHeight;
+        // place nav directly below header
+        nav.style.top = headerHeight + 'px';
+        // compute nav height
+        const navHeight = nav.getBoundingClientRect().height;
+        // apply content padding to avoid overlap
+        content.style.paddingTop = (headerHeight + navHeight + 12) + 'px';
+      }
+
+      // refresh on load, resize, scroll (to catch header compacting), and when nav content changes
+      window.addEventListener('load', refreshLayout);
+      window.addEventListener('resize', refreshLayout);
+      window.addEventListener('scroll', refreshLayout);
+
+      // observe mutations (nav items added/removed) and refresh
+      const obs = new MutationObserver(refreshLayout);
+      obs.observe(nav, {childList:true,subtree:true,attributes:true});
+
+      // initial run
+      setTimeout(refreshLayout, 50);
     })();
   </script>
 
