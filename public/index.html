@@ -10,7 +10,7 @@
       --accent1:#d4af37; --accent2:#b57f2a;
       --radius:16px;
       --header-h:78px; --header-h-compact:64px;
-      --logo-h:56px;   --logo-h-compact:42px;
+      --logo-h:56px; --logo-h-compact:42px;
     }
     @media (max-width:640px){
       :root{ --header-h:72px; --header-h-compact:60px; --logo-h:52px; --logo-h-compact:42px; }
@@ -19,19 +19,18 @@
     html,body{height:100%}
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:var(--bg);color:var(--text)}
 
-    /* ===== HEADER (dynamic center on scroll) ===== */
+    /* ===== HEADER ===== */
     .header-wrap{position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);}
     .header{
       height:var(--header-h);display:flex;align-items:center;gap:12px;
-      padding:12px 20px;background:rgba(11,12,16,.92);
-      border-bottom:1px solid var(--stroke);
+      padding:12px 20px;background:rgba(11,12,16,.92);border-bottom:1px solid var(--stroke);
       transition:height .18s ease,padding .18s ease;
     }
     .header__left,.header__center,.header__right{display:flex;align-items:center;gap:12px;}
     .header__left{flex:1 1 33%;}
     .header__center{flex:1 1 34%;justify-content:center;}
     .header__right{flex:1 1 33%;justify-content:flex-end;}
-    .logo{height:var(--logo-h);transition:height .18s ease;}
+    .logo{height:var(--logo-h);width:auto;display:block;transition:height .18s ease;}
     .brandline{font-size:14px;color:var(--text);}
     .brandline .muted{color:var(--muted)}
     .header--centered .header{height:var(--header-h-compact);}
@@ -40,82 +39,70 @@
     .header--centered .brandline{display:none;}
 
     /* ===== TOOLBAR ===== */
-    .toolbar{
-      display:flex;gap:10px;align-items:center;padding:12px 20px;
-      border-bottom:1px solid var(--stroke);background:rgba(11,12,16,.92);
-    }
-    input,select,button{
-      border-radius:10px;border:1px solid var(--stroke);
-      background:#0f1115;color:var(--text);padding:10px 12px;
-    }
-    button{cursor:pointer;background:#1f2937;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease;}
-    button:hover{background:#2b3648;}
-    .content{padding:20px;}
+    .toolbar{display:flex;gap:10px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--stroke);background:rgba(11,12,16,.92);}
+    input,select,button{border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px 12px}
+    button{cursor:pointer;background:#1f2937;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
+    button:hover{background:#2b3648}
+    .content{padding:20px}
 
     /* ===== CARDS ===== */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
     .card{
-      background:var(--panel);border:1px solid var(--stroke);border-radius:var(--radius);
-      padding:16px;display:flex;flex-direction:column;min-height:260px;
-      transition:border-color .15s ease,box-shadow .15s ease;
+      background:var(--panel);border:1px solid var(--stroke);border-radius:var(--radius);padding:16px;
+      display:flex;flex-direction:column;min-height:300px; /* a bit taller for consistent alignment */
+      transition:border-color .15s ease, box-shadow .15s ease;
     }
-    .card:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1),0 10px 22px rgba(0,0,0,.28);}
-    .title{font-size:18px;margin:0 0 6px;line-height:1.2;}
-    .price{font-weight:600;margin:0 0 10px;}
+    .card:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1),0 10px 22px rgba(0,0,0,.28)}
+    .title{font-size:18px;margin:0 0 6px;line-height:1.2}
+
+    .price-line{display:flex;gap:6px;align-items:baseline;margin:0 0 10px}
+    .price-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+    .price{font-weight:700}
+
+    .desc-wrap{margin-top:2px}
+    .desc-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px}
     .desc{
-      font-size:13px;color:var(--muted);margin:0 0 10px;
-      display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+      font-size:13px;color:var(--muted);margin:0;
+      display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden
     }
-    .row{display:flex;gap:8px;align-items:center;}
-    .row-end{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;}
-    .sku{font-size:11px;color:var(--muted);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    .select{width:100%;border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:8px 10px;transition:border-color .15s ease,box-shadow .15s ease;}
-    .select:focus{outline:none;border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1);}
-    .cta{padding:10px 12px;border:1px solid var(--stroke);background:#0f1115;}
-    .cta:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1);}
-    .cta[disabled]{opacity:.55;cursor:not-allowed;}
+
+    .spacer{flex:1 1 auto} /* pushes selector + buttons to bottom for alignment */
+
+    .row{display:flex;gap:8px;align-items:center}
+    .row-end{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .sku{font-size:11px;color:var(--muted);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+    .select{width:100%;border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:8px 10px;transition:border-color .15s ease, box-shadow .15s ease}
+    .select:focus{outline:none;border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
+    .cta{padding:10px 12px;border:1px solid var(--stroke);background:#0f1115}
+    .cta:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
+    .cta[disabled]{opacity:.55;cursor:not-allowed}
 
     /* ===== BANNER ===== */
-    .banner{background:#1f2937;border:1px solid var(--stroke);padding:10px 12px;border-radius:12px;margin:12px 20px 0;font-size:12px;color:#d1d5db;}
-    .warn{color:var(--accent1);font-weight:600;}
+    .banner{background:#1f2937;border:1px solid var(--stroke);padding:10px 12px;border-radius:12px;margin:12px 20px 0;font-size:12px;color:#d1d5db}
+    .warn{color:var(--accent1);font-weight:600}
 
     /* ===== SECTION NAV ===== */
-    #section-nav{
-      display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;
-      border-bottom:1px solid var(--stroke);
-      position:sticky;top:calc(var(--header-h-compact));
-      background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:9;
-    }
-    #section-nav a{
-      font-size:12px;color:var(--muted);padding:6px 10px;
-      border:1px solid var(--stroke);border-radius:10px;text-decoration:none;
-    }
-    #section-nav a:hover{border-color:var(--accent1);}
+    #section-nav{display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--stroke);position:sticky;top:calc(var(--header-h-compact));background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:9}
+    #section-nav a{font-size:12px;color:var(--muted);padding:6px 10px;border:1px solid var(--stroke);border-radius:10px;text-decoration:none}
+    #section-nav a:hover{border-color:var(--accent1)}
 
     /* ===== SECTIONS ===== */
-    .section { margin: 16px 0 8px; }
-    .section__title{
-      font-size:18px;margin:14px 0 8px 4px;color:var(--text);
-      border-left:3px solid var(--accent1);padding-left:10px;
-    }
-    .section__grid{
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* desktop 3–4, mobile 1–2 */
-      gap:16px;
-    }
-    @media (min-width:1280px){
-      .section__grid{ grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-    }
+    .section{margin:16px 0 8px}
+    .section__title{font-size:18px;margin:14px 0 8px 4px;color:var(--text);border-left:3px solid var(--accent1);padding-left:10px}
+    .section__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    @media (min-width:1280px){ .section__grid{ grid-template-columns:repeat(auto-fit,minmax(300px,1fr)) } }
 
     /* ===== MODAL ===== */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;}
-    .modal-card{width:100%;max-width:480px;background:#0f1115;border:1px solid var(--stroke);border-radius:var(--radius);padding:18px;}
-    .modal-card h2{margin:0 0 12px;}
-    .modal .row{display:flex;gap:8px;margin-top:8px;}
-    .modal input,.modal textarea{width:100%;border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px;}
-    .modal input:focus,.modal textarea:focus{outline:none;border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1);}
-    .modal textarea{height:90px;}
-    .modal .btn{padding:10px 12px;border:1px solid var(--stroke);background:#0f1115;}
-    .modal .btn:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1);}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center}
+    .modal-card{width:100%;max-width:480px;background:#0f1115;border:1px solid var(--stroke);border-radius:var(--radius);padding:18px}
+    .modal-card h2{margin:0 0 12px}
+    .modal .row{display:flex;gap:8px;margin-top:8px}
+    .modal input,.modal textarea{width:100%;border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px}
+    .modal input:focus,.modal textarea:focus{outline:none;border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
+    .modal textarea{height:90px}
+    .modal .btn{padding:10px 12px;border:1px solid var(--stroke);background:#0f1115}
+    .modal .btn:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
   </style>
 </head>
 <body>
@@ -133,7 +120,7 @@
 
   <div class="banner" id="banner" style="display:none;"></div>
 
-  <!-- ===== TOOLBAR ===== -->
+  <!-- TOOLBAR -->
   <div class="toolbar">
     <input id="search" placeholder="Search products..." />
     <select id="perPage">
@@ -144,11 +131,11 @@
     <button id="refresh">Refresh</button>
   </div>
 
-  <!-- ===== SECTION NAV + CONTENT ===== -->
+  <!-- SECTION NAV + CONTENT -->
   <div id="section-nav"></div>
   <div class="content"><div id="sections"></div></div>
 
-  <!-- ===== MODAL ===== -->
+  <!-- MODAL -->
   <div class="modal" id="leadModal">
     <div class="modal-card">
       <h2 id="modalTitle">Place order</h2>
@@ -164,29 +151,22 @@
     </div>
   </div>
 
-  <!-- ===== HEADER SCROLL BEHAVIOR ===== -->
+  <!-- HEADER SCROLL -->
   <script>
     (function(){
       const headerWrap = document.getElementById('headerWrap');
-      let centered = false;
+      let centered=false;
       function onScroll(){
-        const shouldCenter = window.scrollY > 40;
-        if (shouldCenter !== centered){
-          centered = shouldCenter;
-          headerWrap.classList.toggle('header--centered', centered);
-        }
+        const shouldCenter = window.scrollY>40;
+        if(shouldCenter!==centered){ centered=shouldCenter; headerWrap.classList.toggle('header--centered', centered); }
       }
-      onScroll();
-      window.addEventListener('scroll', onScroll, { passive:true });
+      onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
     })();
   </script>
 
-  <!-- ===== MENU APP ===== -->
+  <!-- MENU APP -->
   <script>
-    /* ----------------- Config & helpers ----------------- */
-
-    // Weight/Size options driven by Zoho Inventory "unit" (Usage Unit)
-    // Tweak these to match your Google Sheet menu exactly.
+    /* === Weight options driven by Zoho "unit" (Usage Unit) === */
     const WEIGHT_OPTIONS_BY_UNIT = {
       kg: ['250 g','500 g','1 kg','5 kg','10 kg','25 kg'],
       g:  ['100 g','250 g','500 g','1 kg'],
@@ -194,133 +174,118 @@
       oz: ['1 oz','2 oz','4 oz','8 oz','16 oz'],
       l:  ['100 mL','250 mL','500 mL','1 L','5 L'],
       ml: ['100 mL','250 mL','500 mL','1000 mL'],
-      unit: ['10 ct','25 ct','50 ct','100 ct'],    // generic "each"
+      unit: ['10 ct','25 ct','50 ct','100 ct'],
       pcs:  ['10 ct','25 ct','50 ct','100 ct'],
-      tablet: ['100 ct','250 ct','500 ct','1000 ct']
+      tablet:['100 ct','250 ct','500 ct','1000 ct']
     };
     const DEFAULT_WEIGHTS = ['250 g','500 g','1 kg','5 kg','10 kg'];
 
-    function optionsForUnit(unitRaw){
-      const u = (unitRaw||'').toString().trim().toLowerCase(); // "Kg" -> "kg"
-      if (WEIGHT_OPTIONS_BY_UNIT[u]) return WEIGHT_OPTIONS_BY_UNIT[u];
-      // minor normalization
-      if (u === 'kilogram' || u === 'kgs') return WEIGHT_OPTIONS_BY_UNIT['kg'];
-      if (u === 'pound' || u === 'lbs')   return WEIGHT_OPTIONS_BY_UNIT['lb'];
-      if (u === 'liter')                  return WEIGHT_OPTIONS_BY_UNIT['l'];
-      if (u === 'milliliter')             return WEIGHT_OPTIONS_BY_UNIT['ml'];
-      if (u === 'piece' || u === 'each')  return WEIGHT_OPTIONS_BY_UNIT['unit'];
+    function optionsForUnit(uRaw){
+      const u = (uRaw||'').toString().trim().toLowerCase();
+      if(WEIGHT_OPTIONS_BY_UNIT[u]) return WEIGHT_OPTIONS_BY_UNIT[u];
+      if(u==='kilogram'||u==='kgs') return WEIGHT_OPTIONS_BY_UNIT['kg'];
+      if(u==='pound'||u==='lbs')   return WEIGHT_OPTIONS_BY_UNIT['lb'];
+      if(u==='liter')              return WEIGHT_OPTIONS_BY_UNIT['l'];
+      if(u==='milliliter')         return WEIGHT_OPTIONS_BY_UNIT['ml'];
+      if(u==='piece'||u==='each')  return WEIGHT_OPTIONS_BY_UNIT['unit'];
       return DEFAULT_WEIGHTS;
     }
 
-    // Group strictly by built-in Zoho Inventory "category_name"
-    function normalizeStr(v){ return v == null ? '' : String(v).trim(); }
-    function isJunk(v){
-      const s = normalizeStr(v).toLowerCase();
-      return !s || s === 'uncategorized' || s === 'n/a' || s === 'na' || s === '-';
-    }
-    function getSection(item){
-      const cat = normalizeStr(item.category_name);
-      if (!isJunk(cat)) return cat;
-      return 'Uncategorized';
-    }
+    /* === Group strictly by Zoho built-in category_name === */
+    function normalizeStr(v){ return v==null ? '' : String(v).trim(); }
+    function isJunk(v){ const s=normalizeStr(v).toLowerCase(); return !s||['uncategorized','n/a','na','-'].includes(s); }
+    function getSection(item){ const c=normalizeStr(item.category_name); return !isJunk(c)?c:'Other'; }
     function buildSections(items){
-      const buckets = new Map();
-      for (const it of items){
-        const sec = getSection(it);
-        if (!buckets.has(sec)) buckets.set(sec, []);
-        buckets.get(sec).push(it);
-      }
-      const keys = Array.from(buckets.keys());
-      const real = keys.filter(k => k !== 'Uncategorized');
-      const ordered = (real.length ? real : ['Uncategorized']).sort((a,b)=>a.localeCompare(b));
-      return { ordered, buckets };
+      const m=new Map();
+      for(const it of items){ const sec=getSection(it); if(!m.has(sec)) m.set(sec,[]); m.get(sec).push(it); }
+      const keys=[...m.keys()];
+      const real=keys.filter(k=>k!=='Other');
+      const ordered=(real.length?real:['Other']).sort((a,b)=>a.localeCompare(b));
+      return {ordered,buckets:m};
     }
 
-    /* ----------------- UI refs ----------------- */
-    const banner   = document.getElementById('banner');
-    const search   = document.getElementById('search');
-    const perPage  = document.getElementById('perPage');
-    const refreshBtn = document.getElementById('refresh');
-    const sectionsEl = document.getElementById('sections');
-    const navEl      = document.getElementById('section-nav');
+    /* === UI refs === */
+    const banner=document.getElementById('banner');
+    const search=document.getElementById('search');
+    const perPage=document.getElementById('perPage');
+    const refreshBtn=document.getElementById('refresh');
+    const sectionsEl=document.getElementById('sections');
+    const navEl=document.getElementById('section-nav');
 
-    const leadModal  = document.getElementById('leadModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const firstNameEl= document.getElementById('firstName');
-    const lastNameEl = document.getElementById('lastName');
-    const emailEl    = document.getElementById('email');
-    const phoneEl    = document.getElementById('phone');
-    const notesEl    = document.getElementById('notes');
-    const cancelBtn  = document.getElementById('cancelBtn');
-    const createLeadBtn = document.getElementById('createLeadBtn');
+    const leadModal=document.getElementById('leadModal');
+    const modalTitle=document.getElementById('modalTitle');
+    const firstNameEl=document.getElementById('firstName');
+    const lastNameEl=document.getElementById('lastName');
+    const emailEl=document.getElementById('email');
+    const phoneEl=document.getElementById('phone');
+    const notesEl=document.getElementById('notes');
+    const cancelBtn=document.getElementById('cancelBtn');
+    const createLeadBtn=document.getElementById('createLeadBtn');
 
-    /* ----------------- State ----------------- */
-    let allItems = [];
-    let preview  = false;
-    let selectedProduct = null;
-    let selectedWeight  = '';
+    /* === State === */
+    let allItems=[]; let preview=false; let selectedProduct=null; let selectedWeight='';
 
-    const DEMO_ITEMS = [
-      { id:'1', name:'Demo Product A', rate:100, description:'Demo', sku:'DEMO-A', category_name:'Sample', unit:'kg' },
-      { id:'2', name:'Demo Product B', rate:200, description:'Demo', sku:'DEMO-B', category_name:'Sample', unit:'lb' }
-    ];
+    const DEMO_ITEMS=[{id:'1',name:'Demo Product',rate:100,description:'Demo',sku:'DEMO',category_name:'Sample',unit:'kg'}];
 
-    /* ----------------- Data ----------------- */
+    /* === Data === */
     async function fetchItems(page=1){
-      const res = await fetch(`/api/items?page=${page}&per_page=${perPage.value}`);
+      const res=await fetch(`/api/items?page=${page}&per_page=${perPage.value}`);
       if(!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     }
-
     async function loadAll(){
-      sectionsEl.innerHTML = '';
-      let page=1, items=[], hasMore=true;
+      sectionsEl.innerHTML='';
+      let page=1, items=[], more=true;
       try{
-        while(hasMore){
-          const data = await fetchItems(page);
-          const chunk = (data.items||[]).map(x => ({
-            id:x.item_id,
-            name:x.name,
-            rate:x.rate,
+        while(more){
+          const data=await fetchItems(page);
+          const chunk=(data.items||[]).map(x=>({
+            id:x.item_id, name:x.name, rate:x.rate,
             description:(x.description||'').trim(),
-            sku:x.sku || x.item_name || '',
-            category_name:x.category_name || '',
-            unit:x.unit || '',                    // <-- Zoho "Usage Unit"
+            sku:x.sku||x.item_name||'',
+            category_name:x.category_name||'',
+            unit:x.unit||'',
             weight_options:(x.weight_options||'').trim()
           }));
-          items = items.concat(chunk);
-          const ctx = data.page_context || {};
-          const current = ctx.page || page;
-          const total = ctx.total_pages || 1;
-          hasMore = current < total; page++;
+          items=items.concat(chunk);
+          const ctx=data.page_context||{}; const cur=ctx.page||page; const total=ctx.total_pages||1;
+          more=cur<total; page++;
         }
-        allItems = items;
+        allItems=items;
       }catch(e){
-        preview = true; allItems = DEMO_ITEMS;
+        preview=true; allItems=DEMO_ITEMS;
         banner.style.display='block';
         banner.innerHTML='<span class="warn">Preview mode:</span> Using sample products (API did not return live data).';
       }
       render();
     }
 
-    /* ----------------- Cards & Render ----------------- */
+    /* === Cards & render === */
     function escapeHtml(s){return String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 
     function createCard(item){
-      const node = document.createElement('div');
-      node.className = 'card';
+      const node=document.createElement('div');
+      node.className='card';
 
-      // Prefer explicit weight list on the item; otherwise derive from usage unit
-      const derivedOptions = optionsForUnit(item.unit);
+      const derived = optionsForUnit(item.unit);
       const explicit = (item.weight_options||'').split(',').map(s=>s.trim()).filter(Boolean);
-      const weights = explicit.length ? explicit : derivedOptions;
-
+      const weights = explicit.length ? explicit : derived;
       const unitLabel = (item.unit||'').toString().trim();
 
       node.innerHTML = `
         <h3 class="title">${escapeHtml(item.name)}</h3>
-        <div class="price">$${Number(item.rate||0).toLocaleString()}</div>
-        <p class="desc">${escapeHtml(item.description||'')}</p>
+
+        <div class="price-line">
+          <span class="price-label">Starting&nbsp;at</span>
+          <span class="price">$${Number(item.rate||0).toLocaleString()}</span>
+        </div>
+
+        <div class="desc-wrap">
+          <div class="desc-label">Product Description</div>
+          <p class="desc">${escapeHtml(item.description||'')}</p>
+        </div>
+
+        <div class="spacer"></div>
 
         <div class="row">
           <select class="select weight-select" aria-label="Select size">
@@ -337,8 +302,8 @@
 
       const weightSel = node.querySelector('.weight-select');
       const btn = node.querySelector('.place-btn');
-      weightSel.addEventListener('change',()=>{ btn.disabled = !weightSel.value; });
-      btn.addEventListener('click',()=>{
+      weightSel.addEventListener('change', ()=>{ btn.disabled = !weightSel.value; });
+      btn.addEventListener('click', ()=>{
         if(!weightSel.value){ alert('Please choose a size.'); return; }
         openLeadModal(item, weightSel.value);
       });
@@ -347,98 +312,75 @@
     }
 
     function render(){
-      const q = (search.value||'').toLowerCase();
-      const filtered = allItems.filter(i =>
-        i.name.toLowerCase().includes(q) || (i.sku||'').toLowerCase().includes(q)
-      );
+      const q=(search.value||'').toLowerCase();
+      const filtered=allItems.filter(i => i.name.toLowerCase().includes(q) || (i.sku||'').toLowerCase().includes(q));
 
-      const { ordered, buckets } = buildSections(filtered);
+      const {ordered, buckets} = buildSections(filtered);
 
-      // Build / refresh section nav
-      navEl.innerHTML = '';
-      ordered.forEach(sec => {
-        const a = document.createElement('a');
-        a.textContent = sec;
-        a.href = `#sec-${encodeURIComponent(sec)}`;
+      // Section nav
+      navEl.innerHTML='';
+      ordered.forEach(sec=>{
+        const a=document.createElement('a'); a.textContent=sec; a.href=`#sec-${encodeURIComponent(sec)}`;
         navEl.appendChild(a);
       });
 
-      // Build sections as full-width blocks with their own grid
-      sectionsEl.innerHTML = '';
-      if (!ordered.length) {
-        const empty = document.createElement('div');
-        empty.className = 'card';
-        empty.textContent = 'No products found.';
-        sectionsEl.appendChild(empty);
-        return;
+      // Sections
+      sectionsEl.innerHTML='';
+      if(!ordered.length){
+        const empty=document.createElement('div'); empty.className='card'; empty.textContent='No products found.'; sectionsEl.appendChild(empty); return;
       }
 
-      ordered.forEach(sec => {
-        const items = buckets.get(sec) || [];
-        if (!items.length) return;
+      ordered.forEach(sec=>{
+        const items=buckets.get(sec)||[]; if(!items.length) return;
+        const section=document.createElement('section'); section.className='section'; section.id=`sec-${encodeURIComponent(sec)}`;
 
-        const section = document.createElement('section');
-        section.className = 'section';
-        section.id = `sec-${encodeURIComponent(sec)}`;
+        const h=document.createElement('h2'); h.className='section__title'; h.textContent=sec; section.appendChild(h);
 
-        const h = document.createElement('h2');
-        h.className = 'section__title';
-        h.textContent = sec;
-        section.appendChild(h);
-
-        const grid = document.createElement('div');
-        grid.className = 'section__grid';
-        items.forEach(it => grid.appendChild(createCard(it)));
-        section.appendChild(grid);
+        const g=document.createElement('div'); g.className='section__grid';
+        items.forEach(it=> g.appendChild(createCard(it)));
+        section.appendChild(g);
 
         sectionsEl.appendChild(section);
       });
     }
 
-    /* ----------------- Modal & Submit ----------------- */
+    /* ------------ Modal ------------ */
     function openLeadModal(item, weight){
-      selectedProduct = item; selectedWeight = weight;
-      modalTitle.textContent = `Place order: ${item.name}`;
-      firstNameEl.value = ''; lastNameEl.value = ''; emailEl.value = ''; phoneEl.value = ''; notesEl.value = '';
-      leadModal.style.display = 'flex';
+      selectedProduct=item; selectedWeight=weight;
+      modalTitle.textContent=`Place order: ${item.name}`;
+      firstNameEl.value=''; lastNameEl.value=''; emailEl.value=''; phoneEl.value=''; notesEl.value='';
+      leadModal.style.display='flex';
     }
-    cancelBtn.addEventListener('click', ()=>{
-      leadModal.style.display='none'; selectedProduct=null; selectedWeight='';
-    });
-    createLeadBtn.addEventListener('click', async ()=>{
+    document.getElementById('cancelBtn').addEventListener('click', ()=>{ leadModal.style.display='none'; selectedProduct=null; selectedWeight=''; });
+    document.getElementById('createLeadBtn').addEventListener('click', async ()=>{
       if(!selectedProduct) return;
-
       if(!firstNameEl.value.trim()){ firstNameEl.focus(); return alert('Please enter your first name.'); }
       if(!lastNameEl.value.trim()){  lastNameEl.focus();  return alert('Please enter your last name.'); }
       if(!emailEl.value.trim()){     emailEl.focus();     return alert('Please enter your email.'); }
       if(!phoneEl.value.trim()){     phoneEl.focus();     return alert('Please enter your phone.'); }
 
-      const payload = {
+      const payload={
         firstName:firstNameEl.value.trim(),
         lastName:lastNameEl.value.trim(),
         email:emailEl.value.trim(),
         phone:phoneEl.value.trim(),
         productName:selectedProduct.name,
-        notes:(notesEl.value||'').trim()
-          ? `Selected size: ${selectedWeight}\n${notesEl.value.trim()}`
-          : `Selected size: ${selectedWeight}`
+        notes:(notesEl.value||'').trim()?`Selected size: ${selectedWeight}\n${notesEl.value.trim()}`:`Selected size: ${selectedWeight}`
       };
 
-      const res = await fetch('/api/lead', {
-        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
-      });
-      const json = await res.json().catch(()=> ({}));
-      if(!res.ok){ return alert('Request failed: ' + (json.message || json.error || res.status)); }
+      const res=await fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const json=await res.json().catch(()=> ({}));
+      if(!res.ok){ alert('Request failed: '+(json.message||json.error||res.status)); return; }
 
       alert('Thanks! Your order request has been sent.');
       leadModal.style.display='none'; selectedProduct=null; selectedWeight='';
     });
 
-    /* ----------------- Search / Refresh ----------------- */
+    /* ------------ Search/Refresh ------------ */
     search.addEventListener('input', render);
     refreshBtn.addEventListener('click', loadAll);
 
-    /* ----------------- Boot ----------------- */
+    /* ------------ Boot ------------ */
     loadAll();
   </script>
 </body>
