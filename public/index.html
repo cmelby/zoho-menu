@@ -22,7 +22,7 @@
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:var(--bg);color:var(--text)}
 
     /* ===== HEADER ===== */
-    .header-wrap{position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);}
+  .header-wrap{position:sticky;top:0;z-index:100;backdrop-filter:blur(8px);}
     .header{
       height:var(--header-h);display:flex;align-items:center;gap:12px;
       padding:12px 20px;background:rgba(11,12,16,.92);border-bottom:1px solid var(--stroke);
@@ -57,8 +57,7 @@
     input,select,button{border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px 12px}
     button{cursor:pointer;background:#1f2937;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
     button:hover{background:#2b3648}
-  /* add top padding so content isn't covered by the fixed header + section nav */
-  .content{padding:20px;padding-top:calc(var(--header-h) + var(--section-nav-h) + 12px)}
+  .content{padding:20px}
 
     /* ===== CARDS ===== */
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
@@ -99,7 +98,7 @@
 
   /* ===== SECTION NAV ===== */
   /* make the section nav fixed so it stays visible as you scroll */
-  #section-nav{display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--stroke);position:fixed;top:var(--header-h-compact);left:0;right:0;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:90;height:var(--section-nav-h);align-items:center}
+  #section-nav{display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--stroke);position:sticky;top:var(--header-h);background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:90}
     #section-nav a{font-size:12px;color:var(--muted);padding:6px 10px;border:1px solid var(--stroke);border-radius:10px;text-decoration:none}
     #section-nav a:hover{border-color:var(--accent1)}
 
@@ -125,11 +124,11 @@
   <!-- ===== HEADER ===== -->
   <div class="header-wrap" id="headerWrap">
     <div class="header" id="header">
-      <div class="header__left">
+      <div class="header__left"></div>
+      <div class="header__center">
         <img src="/logo-genosis.png" alt="Genosis" class="logo" id="logo" />
         <div class="brandline"><span class="muted">Product Menu</span></div>
       </div>
-      <div class="header__center"></div>
       <div class="header__right"></div>
     </div>
   </div>
