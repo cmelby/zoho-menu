@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Genosis • Product Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
       --bg:#0b0c10; --panel:#111318; --stroke:#1f2937; --muted:#9ca3af; --text:#e5e7eb;
@@ -11,6 +12,7 @@
       --radius:16px;
       --header-h:78px; --header-h-compact:64px;
       --logo-h:64px; --logo-h-compact:48px;
+      --section-nav-h:52px;
     }
     @media (max-width:640px){
       :root{ --header-h:72px; --header-h-compact:60px; --logo-h:60px; --logo-h-compact:46px; }
@@ -31,27 +33,32 @@
     .header__center{flex:1 1 34%;justify-content:center;}
     .header__right{flex:1 1 33%;justify-content:flex-end;}
     .logo{height:var(--logo-h);width:auto;display:block;transition:height .18s ease;}
-    .brandline{font-size:14px;color:var(--text);} 
-    /* Make the Product Menu text use the same gold gradient as the logo */
+    .brandline{font-size:14px;color:var(--text);display:flex;align-items:center;gap:8px;font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    /* Make the Product Menu text use the same gold gradient as the logo and larger */
     .brandline .muted{
       background: linear-gradient(90deg, var(--accent1), var(--accent2));
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
       color: transparent;
-      font-weight:600;
+      font-weight:700;
+      font-size:20px;
+      letter-spacing:0.01em;
+      font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      text-align:left;
     }
     .header--centered .header{height:var(--header-h-compact);}
     .header--centered .logo{height:var(--logo-h-compact);}
     .header--centered .header__left,.header--centered .header__right{visibility:hidden;width:0;flex:0 0 0;}
-    .header--centered .brandline{display:none;}
+  .header--centered .brandline{display:flex;}
 
     /* ===== TOOLBAR ===== */
     .toolbar{display:flex;gap:10px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--stroke);background:rgba(11,12,16,.92);}
     input,select,button{border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px 12px}
     button{cursor:pointer;background:#1f2937;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
     button:hover{background:#2b3648}
-    .content{padding:20px}
+  /* add top padding so content isn't covered by the fixed header + section nav */
+  .content{padding:20px;padding-top:calc(var(--header-h) + var(--section-nav-h) + 12px)}
 
     /* ===== CARDS ===== */
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
@@ -90,8 +97,9 @@
     .banner{background:#1f2937;border:1px solid var(--stroke);padding:10px 12px;border-radius:12px;margin:12px 20px 0;font-size:12px;color:#d1d5db}
     .warn{color:var(--accent1);font-weight:600}
 
-    /* ===== SECTION NAV ===== */
-    #section-nav{display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--stroke);position:sticky;top:calc(var(--header-h-compact));background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:9}
+  /* ===== SECTION NAV ===== */
+  /* make the section nav fixed so it stays visible as you scroll */
+  #section-nav{display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--stroke);position:fixed;top:var(--header-h-compact);left:0;right:0;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:90;height:var(--section-nav-h);align-items:center}
     #section-nav a{font-size:12px;color:var(--muted);padding:6px 10px;border:1px solid var(--stroke);border-radius:10px;text-decoration:none}
     #section-nav a:hover{border-color:var(--accent1)}
 
@@ -117,11 +125,11 @@
   <!-- ===== HEADER ===== -->
   <div class="header-wrap" id="headerWrap">
     <div class="header" id="header">
-      <div class="header__left"></div>
-      <div class="header__center">
+      <div class="header__left">
         <img src="/logo-genosis.png" alt="Genosis" class="logo" id="logo" />
         <div class="brandline"><span class="muted">Product Menu</span></div>
       </div>
+      <div class="header__center"></div>
       <div class="header__right"></div>
     </div>
   </div>
