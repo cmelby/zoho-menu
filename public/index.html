@@ -69,10 +69,10 @@
   .content{padding:20px;padding-top:calc(var(--header-h) + var(--section-nav-h) + 8px)}
 
     /* ===== CARDS ===== */
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
-    .card{
-      background:var(--panel);border:1px solid var(--stroke);border-radius:var(--radius);padding:16px;
-      display:flex;flex-direction:column;min-height:300px; /* a bit taller for consistent alignment */
+    /* make left/right columns flexible to avoid large empty gutters */
+    .header__left{flex:0 1 auto;min-width:160px;justify-content:flex-start;padding-left: max(20px, calc(50% - 600px + 20px));}
+    .header__center{flex:0 1 480px;position:relative;display:flex;justify-content:center}
+    .header__right{flex:0 1 auto;min-width:160px;justify-content:flex-end;padding-right: max(20px, calc(50% - 600px + 20px));}
       transition:border-color .15s ease, box-shadow .15s ease;
     }
     .card:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1),0 10px 22px rgba(0,0,0,.28)}
