@@ -23,10 +23,10 @@
 
     /* ===== HEADER ===== */
   /* header-wrap becomes a fixed, full-width header block containing the header, toolbar, and nav */
-  .header-wrap{position:fixed;inset:0 0 auto 0;top:0;left:0;right:0;z-index:110;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);}
+  .header-wrap{position:fixed;inset:0 0 auto 0;top:0;left:0;right:0;z-index:110;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,0.03)}
     .header{
       height:var(--header-h);display:flex;align-items:center;gap:12px;max-width:1200px;margin:0 auto;
-      padding:12px 20px;border-bottom:1px solid var(--stroke);
+      padding:12px 20px;/* inner container no longer draws full-width border */
       transition:height .18s ease,padding .18s ease;
       position:relative; /* ensure header creates its own stacking context */
       z-index:140; /* sit above the section-nav */
@@ -56,7 +56,7 @@
   .header--centered .brandline{display:flex;}
 
     /* ===== TOOLBAR ===== */
-  .toolbar{display:flex;gap:10px;align-items:center;padding:10px 20px;border-top:1px solid transparent;max-width:1200px;margin:0 auto;background:transparent;position:relative;z-index:130}
+  .toolbar{display:flex;gap:10px;align-items:center;padding:10px 20px;max-width:1200px;margin:0 auto;background:transparent;position:relative;z-index:130}
     input,select,button{border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px 12px}
     button{cursor:pointer;background:#1f2937;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
     button:hover{background:#2b3648}
@@ -105,11 +105,29 @@
   /* section-nav is now part of the header-wrap and flows naturally below the toolbar */
   /* keep nav items on one line and allow horizontal scroll to avoid wrapping */
   /* keep the nav visually below the header/toolbar and restrict it to one row */
-  #section-nav{display:flex;gap:10px;flex-wrap:nowrap;overflow-x:auto;padding:8px 20px;border-top:1px solid var(--stroke);max-width:1200px;margin:0 auto;align-items:center;position:relative;z-index:110;max-height:var(--section-nav-h);overflow-y:hidden}
+  #section-nav{display:flex;gap:10px;flex-wrap:nowrap;overflow-x:auto;padding:8px 20px;max-width:1200px;margin:0 auto;align-items:center;position:relative;z-index:110;max-height:var(--section-nav-h);overflow-y:hidden}
   #section-nav::-webkit-scrollbar{height:8px}
   #section-nav{scrollbar-width:thin}
     #section-nav a{font-size:12px;color:var(--muted);padding:6px 10px;border:1px solid var(--stroke);border-radius:10px;text-decoration:none;display:inline-block;white-space:nowrap}
     #section-nav a:hover{border-color:var(--accent1)}
+
+  /* Make the visual separators extend to the viewport edges by drawing
+     subtle borders on the header-wrap itself and reducing inner container
+     borders. Also tighten spacing on small screens. */
+  @media (max-width:960px){
+    .header{padding:10px 14px;}
+    .toolbar{padding:8px 14px;gap:8px}
+    #section-nav{padding:6px 12px;gap:8px}
+    .brandline .muted{font-size:18px}
+  }
+  @media (max-width:480px){
+    .header{padding:8px 10px}
+    .brandline .muted{font-size:16px}
+    .logo{height:var(--logo-h-compact)}
+    .header__left{padding-left:6px}
+    .header__right{padding-right:6px}
+    .toolbar{flex-wrap:wrap;gap:8px}
+  }
 
     /* ===== SECTIONS ===== */
     .section{margin:16px 0 8px}
