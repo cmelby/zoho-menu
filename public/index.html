@@ -22,11 +22,14 @@
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:var(--bg);color:var(--text)}
 
     /* ===== HEADER ===== */
-  .header-wrap{position:sticky;top:0;z-index:100;backdrop-filter:blur(8px);}
+  /* header-wrap becomes a fixed, full-width header block containing the header, toolbar, and nav */
+  .header-wrap{position:fixed;inset:0 0 auto 0;top:0;left:0;right:0;z-index:110;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);}
     .header{
-      height:var(--header-h);display:flex;align-items:center;gap:12px;
-      padding:12px 20px;background:rgba(11,12,16,.92);border-bottom:1px solid var(--stroke);
+      height:var(--header-h);display:flex;align-items:center;gap:12px;max-width:1200px;margin:0 auto;
+      padding:12px 20px;border-bottom:1px solid var(--stroke);
       transition:height .18s ease,padding .18s ease;
+      position:relative; /* ensure header creates its own stacking context */
+      z-index:140; /* sit above the section-nav */
     }
     .header__left,.header__center,.header__right{display:flex;align-items:center;gap:12px;}
     .header__left{flex:1 1 33%;}
@@ -53,7 +56,7 @@
   .header--centered .brandline{display:flex;}
 
     /* ===== TOOLBAR ===== */
-    .toolbar{display:flex;gap:10px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--stroke);background:rgba(11,12,16,.92);}
+  .toolbar{display:flex;gap:10px;align-items:center;padding:10px 20px;border-top:1px solid transparent;max-width:1200px;margin:0 auto;background:transparent;position:relative;z-index:130}
     input,select,button{border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px 12px}
     button{cursor:pointer;background:#1f2937;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
     button:hover{background:#2b3648}
@@ -99,8 +102,13 @@
 
   /* ===== SECTION NAV ===== */
   /* make the section nav fixed so it stays visible as you scroll */
-  #section-nav{display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;border-bottom:1px solid var(--stroke);position:fixed;top:var(--header-h);left:0;right:0;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);z-index:95;align-items:center}
-    #section-nav a{font-size:12px;color:var(--muted);padding:6px 10px;border:1px solid var(--stroke);border-radius:10px;text-decoration:none}
+  /* section-nav is now part of the header-wrap and flows naturally below the toolbar */
+  /* keep nav items on one line and allow horizontal scroll to avoid wrapping */
+  /* keep the nav visually below the header/toolbar and restrict it to one row */
+  #section-nav{display:flex;gap:10px;flex-wrap:nowrap;overflow-x:auto;padding:8px 20px;border-top:1px solid var(--stroke);max-width:1200px;margin:0 auto;align-items:center;position:relative;z-index:110;max-height:var(--section-nav-h);overflow-y:hidden}
+  #section-nav::-webkit-scrollbar{height:8px}
+  #section-nav{scrollbar-width:thin}
+    #section-nav a{font-size:12px;color:var(--muted);padding:6px 10px;border:1px solid var(--stroke);border-radius:10px;text-decoration:none;display:inline-block;white-space:nowrap}
     #section-nav a:hover{border-color:var(--accent1)}
 
     /* ===== SECTIONS ===== */
@@ -125,30 +133,30 @@
   <!-- ===== HEADER ===== -->
   <div class="header-wrap" id="headerWrap">
     <div class="header" id="header">
-      <div class="header__left"></div>
+      <div class="header__left">
+        <div class="brandline"><span class="muted">Product Menu</span></div>
+      </div>
       <div class="header__center">
         <img src="/logo-genosis.png" alt="Genosis" class="logo" id="logo" />
-        <div class="brandline"><span class="muted">Product Menu</span></div>
       </div>
       <div class="header__right"></div>
     </div>
+
+    <div class="toolbar">
+      <input id="search" placeholder="Search products..." />
+      <select id="perPage">
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="200" selected>200</option>
+      </select>
+      <button id="refresh">Refresh</button>
+    </div>
+
+    <div id="section-nav"></div>
   </div>
 
   <div class="banner" id="banner" style="display:none;"></div>
 
-  <!-- TOOLBAR -->
-  <div class="toolbar">
-    <input id="search" placeholder="Search products..." />
-    <select id="perPage">
-      <option value="50">50</option>
-      <option value="100">100</option>
-      <option value="200" selected>200</option>
-    </select>
-    <button id="refresh">Refresh</button>
-  </div>
-
-  <!-- SECTION NAV + CONTENT -->
-  <div id="section-nav"></div>
   <div class="content"><div id="sections"></div></div>
 
   <!-- MODAL -->
@@ -181,37 +189,28 @@
   </script>
 
   <script>
-    // Ensure the fixed section nav sits immediately under the header and that
-    // page content has enough top padding so nothing is overlapped even when
-    // the nav wraps to multiple rows.
+    // Keep content padded below the fixed headerWrap (which now contains
+    // header, toolbar, and section nav). This responds to header compacting
+    // and nav size changes.
     (function(){
-      const header = document.getElementById('header');
-      const nav = document.getElementById('section-nav');
+      const headerWrap = document.getElementById('headerWrap');
       const content = document.querySelector('.content');
+      const nav = document.getElementById('section-nav');
 
-      function refreshLayout(){
-        if(!header || !nav || !content) return;
-        // measure header height (accounts for compact state)
-        const headerHeight = header.offsetHeight;
-        // place nav directly below header
-        nav.style.top = headerHeight + 'px';
-        // compute nav height
-        const navHeight = nav.getBoundingClientRect().height;
-        // apply content padding to avoid overlap
-        content.style.paddingTop = (headerHeight + navHeight + 12) + 'px';
+      function refresh(){
+        if(!headerWrap || !content) return;
+        const h = headerWrap.offsetHeight || 0;
+        content.style.paddingTop = (h + 8) + 'px';
       }
 
-      // refresh on load, resize, scroll (to catch header compacting), and when nav content changes
-      window.addEventListener('load', refreshLayout);
-      window.addEventListener('resize', refreshLayout);
-      window.addEventListener('scroll', refreshLayout);
+      window.addEventListener('load', refresh);
+      window.addEventListener('resize', refresh);
+      window.addEventListener('scroll', refresh);
 
-      // observe mutations (nav items added/removed) and refresh
-      const obs = new MutationObserver(refreshLayout);
-      obs.observe(nav, {childList:true,subtree:true,attributes:true});
+      const obs = new MutationObserver(refresh);
+      if(nav) obs.observe(nav, {childList:true,subtree:true});
 
-      // initial run
-      setTimeout(refreshLayout, 50);
+      setTimeout(refresh, 50);
     })();
   </script>
 
