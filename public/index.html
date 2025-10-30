@@ -7,7 +7,7 @@
   <style>
     :root{
       --bg:#0b0c10; --panel:#111318; --stroke:#1f2937; --muted:#9ca3af; --text:#e5e7eb;
-      --accent1:#d4af37; --accent2:#b57f2a; /* gold tones */
+      --accent1:#d4af37; --accent2:#b57f2a;
       --radius:16px;
       --header-h:78px; --header-h-compact:64px;
       --logo-h:56px;   --logo-h-compact:42px;
@@ -78,7 +78,7 @@
     .banner{background:#1f2937;border:1px solid var(--stroke);padding:10px 12px;border-radius:12px;margin:12px 20px 0;font-size:12px;color:#d1d5db;}
     .warn{color:var(--accent1);font-weight:600;}
 
-    /* ===== SECTION NAV (sticky below header) ===== */
+    /* ===== SECTION NAV ===== */
     #section-nav{
       display:flex;gap:10px;flex-wrap:wrap;padding:8px 20px;
       border-bottom:1px solid var(--stroke);
@@ -91,7 +91,7 @@
     }
     #section-nav a:hover{border-color:var(--accent1);}
 
-    /* ===== SECTION WRAPPERS ===== */
+    /* ===== SECTIONS ===== */
     .section { margin: 16px 0 8px; }
     .section__title{
       font-size:18px;margin:14px 0 8px 4px;color:var(--text);
@@ -131,7 +131,6 @@
     </div>
   </div>
 
-  <!-- Optional banner -->
   <div class="banner" id="banner" style="display:none;"></div>
 
   <!-- ===== TOOLBAR ===== -->
@@ -147,9 +146,7 @@
 
   <!-- ===== SECTION NAV + CONTENT ===== -->
   <div id="section-nav"></div>
-  <div class="content">
-    <div id="sections"></div>
-  </div>
+  <div class="content"><div id="sections"></div></div>
 
   <!-- ===== MODAL ===== -->
   <div class="modal" id="leadModal">
@@ -161,8 +158,8 @@
       <div class="row"><input id="phone" placeholder="Phone" required /></div>
       <div class="row"><textarea id="notes" placeholder="Notes (optional)"></textarea></div>
       <div class="row" style="justify-content:flex-end;margin-top:10px">
-        <button class="btn" id="cancelBtn">Cancel</button>
-        <button class="btn" id="createLeadBtn">Submit</button>
+        <button class="btn" id="cancelBtn" style="padding:10px 12px;border:1px solid var(--stroke);background:#0f1115;">Cancel</button>
+        <button class="btn" id="createLeadBtn" style="padding:10px 12px;border:1px solid var(--stroke);background:#0f1115;">Submit</button>
       </div>
     </div>
   </div>
@@ -187,21 +184,45 @@
   <!-- ===== MENU APP ===== -->
   <script>
     /* ----------------- Config & helpers ----------------- */
-    // We group strictly by Zoho Inventory's built-in "category_name"
-    const GROUP_BY_SECTION = true;
 
+    // Weight/Size options driven by Zoho Inventory "unit" (Usage Unit)
+    // Tweak these to match your Google Sheet menu exactly.
+    const WEIGHT_OPTIONS_BY_UNIT = {
+      kg: ['250 g','500 g','1 kg','5 kg','10 kg','25 kg'],
+      g:  ['100 g','250 g','500 g','1 kg'],
+      lb: ['1 lb','5 lb','10 lb','25 lb'],
+      oz: ['1 oz','2 oz','4 oz','8 oz','16 oz'],
+      l:  ['100 mL','250 mL','500 mL','1 L','5 L'],
+      ml: ['100 mL','250 mL','500 mL','1000 mL'],
+      unit: ['10 ct','25 ct','50 ct','100 ct'],    // generic "each"
+      pcs:  ['10 ct','25 ct','50 ct','100 ct'],
+      tablet: ['100 ct','250 ct','500 ct','1000 ct']
+    };
+    const DEFAULT_WEIGHTS = ['250 g','500 g','1 kg','5 kg','10 kg'];
+
+    function optionsForUnit(unitRaw){
+      const u = (unitRaw||'').toString().trim().toLowerCase(); // "Kg" -> "kg"
+      if (WEIGHT_OPTIONS_BY_UNIT[u]) return WEIGHT_OPTIONS_BY_UNIT[u];
+      // minor normalization
+      if (u === 'kilogram' || u === 'kgs') return WEIGHT_OPTIONS_BY_UNIT['kg'];
+      if (u === 'pound' || u === 'lbs')   return WEIGHT_OPTIONS_BY_UNIT['lb'];
+      if (u === 'liter')                  return WEIGHT_OPTIONS_BY_UNIT['l'];
+      if (u === 'milliliter')             return WEIGHT_OPTIONS_BY_UNIT['ml'];
+      if (u === 'piece' || u === 'each')  return WEIGHT_OPTIONS_BY_UNIT['unit'];
+      return DEFAULT_WEIGHTS;
+    }
+
+    // Group strictly by built-in Zoho Inventory "category_name"
     function normalizeStr(v){ return v == null ? '' : String(v).trim(); }
     function isJunk(v){
       const s = normalizeStr(v).toLowerCase();
       return !s || s === 'uncategorized' || s === 'n/a' || s === 'na' || s === '-';
     }
-
     function getSection(item){
       const cat = normalizeStr(item.category_name);
       if (!isJunk(cat)) return cat;
-      return 'Uncategorized'; // shown only if nothing else exists
+      return 'Uncategorized';
     }
-
     function buildSections(items){
       const buckets = new Map();
       for (const it of items){
@@ -209,7 +230,6 @@
         if (!buckets.has(sec)) buckets.set(sec, []);
         buckets.get(sec).push(it);
       }
-      // Hide 'Uncategorized' if we have any real categories; otherwise show it
       const keys = Array.from(buckets.keys());
       const real = keys.filter(k => k !== 'Uncategorized');
       const ordered = (real.length ? real : ['Uncategorized']).sort((a,b)=>a.localeCompare(b));
@@ -241,8 +261,8 @@
     let selectedWeight  = '';
 
     const DEMO_ITEMS = [
-      { id:'1', name:'Demo Product A', rate:100, description:'Demo', sku:'DEMO-A', category_name:'Sample' },
-      { id:'2', name:'Demo Product B', rate:200, description:'Demo', sku:'DEMO-B', category_name:'Sample' }
+      { id:'1', name:'Demo Product A', rate:100, description:'Demo', sku:'DEMO-A', category_name:'Sample', unit:'kg' },
+      { id:'2', name:'Demo Product B', rate:200, description:'Demo', sku:'DEMO-B', category_name:'Sample', unit:'lb' }
     ];
 
     /* ----------------- Data ----------------- */
@@ -259,10 +279,13 @@
         while(hasMore){
           const data = await fetchItems(page);
           const chunk = (data.items||[]).map(x => ({
-            id:x.item_id, name:x.name, rate:x.rate,
+            id:x.item_id,
+            name:x.name,
+            rate:x.rate,
             description:(x.description||'').trim(),
             sku:x.sku || x.item_name || '',
             category_name:x.category_name || '',
+            unit:x.unit || '',                    // <-- Zoho "Usage Unit"
             weight_options:(x.weight_options||'').trim()
           }));
           items = items.concat(chunk);
@@ -282,13 +305,17 @@
 
     /* ----------------- Cards & Render ----------------- */
     function escapeHtml(s){return String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-    const DEFAULT_WEIGHTS = ['250 g','500 g','1 kg','5 kg','10 kg'];
-    function parseWeights(csv){ if(!csv) return DEFAULT_WEIGHTS; const a=csv.split(',').map(s=>s.trim()).filter(Boolean); return a.length?a:DEFAULT_WEIGHTS; }
 
     function createCard(item){
       const node = document.createElement('div');
       node.className = 'card';
-      const weights = parseWeights(item.weight_options);
+
+      // Prefer explicit weight list on the item; otherwise derive from usage unit
+      const derivedOptions = optionsForUnit(item.unit);
+      const explicit = (item.weight_options||'').split(',').map(s=>s.trim()).filter(Boolean);
+      const weights = explicit.length ? explicit : derivedOptions;
+
+      const unitLabel = (item.unit||'').toString().trim();
 
       node.innerHTML = `
         <h3 class="title">${escapeHtml(item.name)}</h3>
@@ -296,8 +323,8 @@
         <p class="desc">${escapeHtml(item.description||'')}</p>
 
         <div class="row">
-          <select class="select weight-select" aria-label="Select weight">
-            <option value="">Select weight</option>
+          <select class="select weight-select" aria-label="Select size">
+            <option value="">Select size${unitLabel ? ` (${escapeHtml(unitLabel)})` : ''}</option>
             ${weights.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join('')}
           </select>
         </div>
@@ -312,7 +339,7 @@
       const btn = node.querySelector('.place-btn');
       weightSel.addEventListener('change',()=>{ btn.disabled = !weightSel.value; });
       btn.addEventListener('click',()=>{
-        if(!weightSel.value){ alert('Please choose a weight.'); return; }
+        if(!weightSel.value){ alert('Please choose a size.'); return; }
         openLeadModal(item, weightSel.value);
       });
 
@@ -393,8 +420,8 @@
         phone:phoneEl.value.trim(),
         productName:selectedProduct.name,
         notes:(notesEl.value||'').trim()
-          ? `Weight: ${selectedWeight}\n${notesEl.value.trim()}`
-          : `Weight: ${selectedWeight}`
+          ? `Selected size: ${selectedWeight}\n${notesEl.value.trim()}`
+          : `Selected size: ${selectedWeight}`
       };
 
       const res = await fetch('/api/lead', {
@@ -412,21 +439,8 @@
     refreshBtn.addEventListener('click', loadAll);
 
     /* ----------------- Boot ----------------- */
-    (function initHeaderCentering(){
-      const headerWrap = document.getElementById('headerWrap');
-      let centered = false;
-      function onScroll(){
-        const shouldCenter = window.scrollY > 40;
-        if (shouldCenter !== centered){
-          centered = shouldCenter;
-          headerWrap.classList.toggle('header--centered', centered);
-        }
-      }
-      onScroll();
-      window.addEventListener('scroll', onScroll, { passive:true });
-    })();
-
     loadAll();
   </script>
 </body>
 </html>
+
