@@ -1,173 +1,532 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Genosis • Product Menu</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#0b0c10; --panel:#111318; --stroke:#1f2937; --muted:#9ca3af; --text:#e5e7eb;
-      --accent1:#d4af37; --accent2:#b57f2a;
-      --radius:16px;
-      --header-h:78px; --header-h-compact:64px;
-      --logo-h:64px; --logo-h-compact:48px;
-      --section-nav-h:52px;
-    }
-    @media (max-width:640px){
-      :root{ --header-h:72px; --header-h-compact:60px; --logo-h:60px; --logo-h-compact:46px; }
+    :root {
+      /* Palette: Deep, rich darks and refined golds */
+      --bg: #050505;
+      --panel: #111111;
+      --panel-hover: #161616;
+      --stroke: #222;
+      --stroke-hover: #333;
+      --text: #e5e5e5;
+      --muted: #888;
+
+      /* Accents */
+      --accent1: #d4af37;
+      --accent2: #f3e5ab;
+      /* lighter gold for gradients */
+      --accent-glow: rgba(212, 175, 55, 0.15);
+
+      /* Spacing & Layout */
+      --radius: 12px;
+      --radius-sm: 8px;
+      --header-h: 80px;
+      --header-h-compact: 64px;
+      --logo-h: 48px;
+      --logo-h-compact: 40px;
+      --section-nav-h: 56px;
+      --container: 1200px;
     }
 
-    html,body{height:100%}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:var(--bg);color:var(--text)}
+    @media (max-width:640px) {
+      :root {
+        --header-h: 70px;
+        --header-h-compact: 60px;
+      }
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
 
     /* ===== HEADER ===== */
-  /* header-wrap becomes a fixed, full-width header block containing the header, toolbar, and nav */
-  .header-wrap{position:fixed;inset:0 0 auto 0;top:0;left:0;right:0;z-index:110;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,0.03)}
-    .header{
-      height:var(--header-h);display:flex;align-items:center;gap:12px;max-width:1200px;margin:0 auto;
-      padding:12px 20px;/* inner container no longer draws full-width border */
-      transition:height .18s ease,padding .18s ease;
-      position:relative; /* ensure header creates its own stacking context */
-      z-index:140; /* sit above the section-nav */
+    .header-wrap {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 100;
+      background: rgba(5, 5, 5, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: all 0.3s ease;
     }
-  .header__left,.header__center,.header__right{display:flex;align-items:center;gap:12px;}
-  /* left column defines the page content left edge (matches centered max-width) */
-  /* compute the left offset to match the centered max-width container (1200px) */
-  .header__left{flex:0 0 320px;justify-content:flex-start;padding-left: max(20px, calc(50% - 600px + 20px));}
-  .header__center{flex:1 1 auto;position:relative;display:flex;justify-content:center}
-  .header__right{flex:0 0 320px;justify-content:flex-end;padding-right: max(20px, calc(50% - 600px + 20px));}
-  /* visually center the logo over the header while other items align to the left/right columns */
-  .logo{height:var(--logo-h);width:auto;display:block;transition:height .18s ease;position:absolute;left:50%;transform:translateX(-50%);top:50%;transform:translate(-50%,-50%)}
-  .brandline{font-size:14px;color:var(--text);display:flex;align-items:center;gap:8px;font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-    /* Make the Product Menu text use the same gold gradient as the logo and larger */
-    .brandline .muted{
-      background: linear-gradient(90deg, var(--accent1), var(--accent2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      color: transparent;
-      font-weight:700;
-      font-size:20px;
-      letter-spacing:0.01em;
-      font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      text-align:left;
+
+    .header {
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 24px;
+      transition: height 0.3s ease;
+      position: relative;
     }
-    .header--centered .header{height:var(--header-h-compact);}
-    .header--centered .logo{height:var(--logo-h-compact);}
-    .header--centered .header__left,.header--centered .header__right{visibility:hidden;width:0;flex:0 0 0;}
-  .header--centered .brandline{display:flex;}
+
+    /* Layout Columns */
+    .header__left,
+    .header__right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .header__right {
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .header__center {
+      flex: 0 0 auto;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .logo {
+      height: var(--logo-h);
+      width: auto;
+      display: block;
+      transition: height 0.3s ease;
+      filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.1));
+    }
+
+    .brandline {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brandline .highlight {
+      color: var(--accent1);
+      font-weight: 700;
+    }
+
+    /* Compact State */
+    .header--centered .header {
+      height: var(--header-h-compact);
+    }
+
+    .header--centered .logo {
+      height: var(--logo-h-compact);
+    }
 
     /* ===== TOOLBAR ===== */
-  .toolbar{display:flex;gap:10px;align-items:center;padding:10px 0;max-width:1200px;margin:0 auto;background:transparent;position:relative;z-index:130}
-  /* align toolbar content to the same left edge as the header__left */
-  .toolbar{padding-left: max(20px, calc(50% - 600px + 20px)); padding-right: max(20px, calc(50% - 600px + 20px));}
-    input,select,button{border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px 12px}
-    button{cursor:pointer;background:#1f2937;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
-    button:hover{background:#2b3648}
-  /* add top padding so content isn't covered by the fixed header + section nav */
-  .content{padding:20px;padding-top:calc(var(--header-h) + var(--section-nav-h) + 8px)}
+    .toolbar {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* Inputs & Controls */
+    input,
+    select,
+    button,
+    textarea {
+      font-family: inherit;
+      font-size: 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--stroke);
+      background: var(--panel);
+      color: var(--text);
+      padding: 10px 16px;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #555;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent1);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+      background: var(--panel-hover);
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 500;
+      background: var(--panel);
+    }
+
+    button:hover:not([disabled]) {
+      border-color: var(--muted);
+      background: var(--panel-hover);
+      transform: translateY(-1px);
+    }
+
+    button:active:not([disabled]) {
+      transform: translateY(0);
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #000;
+      border: none;
+      font-weight: 600;
+    }
+
+    button.primary:hover:not([disabled]) {
+      filter: brightness(1.1);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+
+    button[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #search {
+      flex: 1;
+      max-width: 320px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 12px center;
+      padding-left: 40px;
+    }
+
+    /* ===== SECTION NAV ===== */
+    #section-nav {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 24px 16px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      /* Firefox */
+    }
+
+    #section-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    #section-nav a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 16px;
+      border-radius: 100px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.03);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    #section-nav a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    #section-nav a.active {
+      color: var(--accent1);
+      background: rgba(212, 175, 55, 0.1);
+      border-color: rgba(212, 175, 55, 0.2);
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .content {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 24px;
+      /* Padding top is handled by JS to match header height */
+    }
+
+    .section {
+      margin-bottom: 48px;
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    .section__title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section__title::after {
+      content: '';
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, var(--stroke) 0%, transparent 100%);
+    }
+
+    .section__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
 
     /* ===== CARDS ===== */
-    /* make left/right columns flexible to avoid large empty gutters */
-    .header__left{flex:0 1 auto;min-width:160px;justify-content:flex-start;padding-left: max(20px, calc(50% - 600px + 20px));}
-    .header__center{flex:0 1 480px;position:relative;display:flex;justify-content:center}
-    .header__right{flex:0 1 auto;min-width:160px;justify-content:flex-end;padding-right: max(20px, calc(50% - 600px + 20px));}
-      transition:border-color .15s ease, box-shadow .15s ease;
-    }
-    .card:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1),0 10px 22px rgba(0,0,0,.28)}
-    .title{font-size:18px;margin:0 0 6px;line-height:1.2}
-
-    .price-line{display:flex;gap:6px;align-items:baseline;margin:0 0 10px}
-    .price-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-    .price{font-weight:700}
-
-    .desc-wrap{margin-top:2px}
-    .desc-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px}
-    .desc{
-      font-size:13px;color:var(--muted);margin:0;
-      display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+      overflow: hidden;
     }
 
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--stroke-hover);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      background: var(--panel-hover);
+    }
 
-    .spacer{flex:1 1 auto} /* pushes selector + buttons to bottom for alignment */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
 
-    .row{display:flex;gap:8px;align-items:center}
-    .row-end{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .sku{font-size:11px;color:var(--muted);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .card:hover::before {
+      opacity: 1;
+    }
 
-    .select{width:100%;border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:8px 10px;transition:border-color .15s ease, box-shadow .15s ease}
-    .select:focus{outline:none;border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
-    .cta{padding:10px 12px;border:1px solid var(--stroke);background:#0f1115}
-    .cta:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
-    .cta[disabled]{opacity:.55;cursor:not-allowed}
-  .select.highlight{box-shadow:0 0 0 3px rgba(212,175,55,0.18);border-color:var(--accent1)}
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.3;
+      margin: 0 0 8px;
+      color: var(--text);
+    }
 
-    /* ===== BANNER ===== */
-    .banner{background:#1f2937;border:1px solid var(--stroke);padding:10px 12px;border-radius:12px;margin:12px 20px 0;font-size:12px;color:#d1d5db}
-    .warn{color:var(--accent1);font-weight:600}
+    .price-line {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
 
-  /* ===== SECTION NAV ===== */
-  /* make the section nav fixed so it stays visible as you scroll */
-  /* section-nav is now part of the header-wrap and flows naturally below the toolbar */
-  /* keep nav items on one line and allow horizontal scroll to avoid wrapping */
-  /* keep the nav visually below the header/toolbar and restrict it to one row */
-  /* align nav with left column by using same left padding as header__left */
-  #section-nav{display:flex;gap:10px;flex-wrap:nowrap;overflow-x:auto;padding:8px 0;max-width:1200px;margin:0 auto;align-items:center;position:relative;z-index:110;max-height:var(--section-nav-h);overflow-y:hidden}
-  /* align nav to the same left edge as header and toolbar */
-  #section-nav{padding-left: max(20px, calc(50% - 600px + 20px)); padding-right: max(20px, calc(50% - 600px + 20px));}
-  #section-nav::-webkit-scrollbar{height:8px}
-  #section-nav{scrollbar-width:thin}
-    #section-nav a{font-size:12px;color:var(--muted);padding:6px 10px;border:1px solid var(--stroke);border-radius:10px;text-decoration:none;display:inline-block;white-space:nowrap}
-    #section-nav a:hover{border-color:var(--accent1)}
+    .price-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
 
-  /* Make the visual separators extend to the viewport edges by drawing
-     subtle borders on the header-wrap itself and reducing inner container
-     borders. Also tighten spacing on small screens. */
-  @media (max-width:960px){
-  .header{padding:10px 12px;}
-  .header__left{flex:0 0 220px;padding-left:12px}
-  .header__right{flex:0 0 220px;padding-right:12px}
-  .toolbar{padding:8px 12px;gap:8px}
-  #section-nav{padding:6px 12px;gap:8px}
-  .brandline .muted{font-size:18px}
-  }
-  @media (max-width:480px){
-  .header{padding:8px 8px}
-  .brandline .muted{font-size:15px}
-  /* on very small screens, don't absolutely center the logo (it overlaps) */
-  .logo{position:static;transform:none;height:var(--logo-h-compact)}
-  .header__left{flex:1 1 auto;padding-left:8px}
-  .header__right{flex:1 1 auto;padding-right:8px}
-  .toolbar{flex-wrap:wrap;gap:8px;justify-content:flex-start}
-  #section-nav{overflow-x:auto}
-  }
-  /* Mobile UX: slightly larger description and select controls for touch targets */
-  @media (max-width:520px){
-    .desc{font-size:15px}
-    .select{font-size:15px;padding:12px 14px}
-    input#search{font-size:15px;padding:12px 14px}
-    .brandline .muted{font-size:16px}
-  }
+    .price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent1);
+    }
 
-    /* ===== SECTIONS ===== */
-    .section{margin:16px 0 8px}
-    .section__title{font-size:18px;margin:14px 0 8px 4px;color:var(--text);border-left:3px solid var(--accent1);padding-left:10px}
-    .section__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-    @media (min-width:1280px){ .section__grid{ grid-template-columns:repeat(auto-fit,minmax(300px,1fr)) } }
+    .desc-wrap {
+      flex: 1;
+      margin-bottom: 20px;
+    }
+
+    .desc-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .desc {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card .row {
+      margin-top: auto;
+    }
+
+    .card .select {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .card .row-end {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sku {
+      font-size: 11px;
+      color: #555;
+      font-family: monospace;
+    }
+
+    .place-btn {
+      padding: 8px 16px;
+      font-size: 13px;
+      background: transparent;
+      border: 1px solid var(--stroke);
+    }
+
+    .place-btn:hover:not([disabled]) {
+      border-color: var(--accent1);
+      color: var(--accent1);
+    }
 
     /* ===== MODAL ===== */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center}
-    .modal-card{width:100%;max-width:480px;background:#0f1115;border:1px solid var(--stroke);border-radius:var(--radius);padding:18px}
-    .modal-card h2{margin:0 0 12px}
-    .modal .row{display:flex;gap:8px;margin-top:8px}
-    .modal input,.modal textarea{width:100%;border-radius:10px;border:1px solid var(--stroke);background:#0f1115;color:var(--text);padding:10px}
-    .modal input:focus,.modal textarea:focus{outline:none;border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
-    .modal textarea{height:90px}
-    .modal .btn{padding:10px 12px;border:1px solid var(--stroke);background:#0f1115}
-    .modal .btn:hover{border-color:var(--accent1);box-shadow:0 0 0 1px var(--accent1)}
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 440px;
+      background: #111;
+      border: 1px solid var(--stroke);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal h2 {
+      margin: 0 0 24px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 24px;
+    }
+
+    .modal .row {
+      margin-bottom: 12px;
+    }
+
+    .modal input,
+    .modal textarea {
+      width: 100%;
+      background: #0a0a0a;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    /* ===== UTILS ===== */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .banner {
+      margin: 20px auto;
+      max-width: var(--container);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      color: var(--accent1);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .header {
+        padding: 0 16px;
+      }
+
+      .toolbar {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+      }
+
+      #search {
+        max-width: 100%;
+        order: 1;
+        width: 100%;
+      }
+
+      #perPage,
+      #refresh {
+        order: 2;
+      }
+
+      .header__left {
+        display: none;
+      }
+
+      /* Hide brand text on mobile to save space if logo is centered */
+      .header__center {
+        position: static;
+        transform: none;
+        flex: 1;
+        justify-content: flex-start;
+      }
+
+      .logo {
+        height: 32px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <!-- ===== HEADER ===== -->
   <div class="header-wrap" id="headerWrap">
@@ -196,7 +555,9 @@
 
   <div class="banner" id="banner" style="display:none;"></div>
 
-  <div class="content"><div id="sections"></div></div>
+  <div class="content">
+    <div id="sections"></div>
+  </div>
 
   <!-- MODAL -->
   <div class="modal" id="leadModal">
@@ -207,23 +568,23 @@
       <div class="row"><input id="email" type="email" placeholder="Email" required /></div>
       <div class="row"><input id="phone" placeholder="Phone" required /></div>
       <div class="row"><textarea id="notes" placeholder="Notes (optional)"></textarea></div>
-      <div class="row" style="justify-content:flex-end;margin-top:10px">
-        <button class="btn" id="cancelBtn" style="padding:10px 12px;border:1px solid var(--stroke);background:#0f1115;">Cancel</button>
-        <button class="btn" id="createLeadBtn" style="padding:10px 12px;border:1px solid var(--stroke);background:#0f1115;">Submit</button>
+      <div class="modal-actions">
+        <button class="btn" id="cancelBtn">Cancel</button>
+        <button class="btn primary" id="createLeadBtn">Submit</button>
       </div>
     </div>
   </div>
 
   <!-- HEADER SCROLL -->
   <script>
-    (function(){
+    (function () {
       const headerWrap = document.getElementById('headerWrap');
-      let centered=false;
-      function onScroll(){
-        const shouldCenter = window.scrollY>40;
-        if(shouldCenter!==centered){ centered=shouldCenter; headerWrap.classList.toggle('header--centered', centered); }
+      let centered = false;
+      function onScroll() {
+        const shouldCenter = window.scrollY > 40;
+        if (shouldCenter !== centered) { centered = shouldCenter; headerWrap.classList.toggle('header--centered', centered); }
       }
-      onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+      onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
     })();
   </script>
 
@@ -231,13 +592,13 @@
     // Keep content padded below the fixed headerWrap (which now contains
     // header, toolbar, and section nav). This responds to header compacting
     // and nav size changes.
-    (function(){
+    (function () {
       const headerWrap = document.getElementById('headerWrap');
       const content = document.querySelector('.content');
       const nav = document.getElementById('section-nav');
 
-      function refresh(){
-        if(!headerWrap || !content) return;
+      function refresh() {
+        if (!headerWrap || !content) return;
         const h = headerWrap.offsetHeight || 0;
         content.style.paddingTop = (h + 8) + 'px';
       }
@@ -247,7 +608,7 @@
       window.addEventListener('scroll', refresh);
 
       const obs = new MutationObserver(refresh);
-      if(nav) obs.observe(nav, {childList:true,subtree:true});
+      if (nav) obs.observe(nav, { childList: true, subtree: true });
 
       setTimeout(refresh, 50);
     })();
@@ -257,121 +618,121 @@
   <script>
     /* === Weight options driven by Zoho "unit" (Usage Unit) === */
     const WEIGHT_OPTIONS_BY_UNIT = {
-      kg: ['250 g','500 g','1 kg','5 kg','10 kg','25 kg'],
-      g:  ['100 g','250 g','500 g','1 kg'],
-      lb: ['1 lb','5 lb','10 lb','25 lb'],
-      oz: ['1 oz','2 oz','4 oz','8 oz','16 oz'],
-      l:  ['100 mL','250 mL','500 mL','1 L','5 L'],
-      ml: ['100 mL','250 mL','500 mL','1000 mL'],
-      unit: ['10 ct','25 ct','50 ct','100 ct'],
-      pcs:  ['10 ct','25 ct','50 ct','100 ct'],
-      tablet:['100 ct','250 ct','500 ct','1000 ct']
+      kg: ['250 g', '500 g', '1 kg', '5 kg', '10 kg', '25 kg'],
+      g: ['100 g', '250 g', '500 g', '1 kg'],
+      lb: ['1 lb', '5 lb', '10 lb', '25 lb'],
+      oz: ['1 oz', '2 oz', '4 oz', '8 oz', '16 oz'],
+      l: ['100 mL', '250 mL', '500 mL', '1 L', '5 L'],
+      ml: ['100 mL', '250 mL', '500 mL', '1000 mL'],
+      unit: ['10 ct', '25 ct', '50 ct', '100 ct'],
+      pcs: ['10 ct', '25 ct', '50 ct', '100 ct'],
+      tablet: ['100 ct', '250 ct', '500 ct', '1000 ct']
     };
-    const DEFAULT_WEIGHTS = ['250 g','500 g','1 kg','5 kg','10 kg'];
+    const DEFAULT_WEIGHTS = ['250 g', '500 g', '1 kg', '5 kg', '10 kg'];
 
-    function optionsForUnit(uRaw){
-      const u = (uRaw||'').toString().trim().toLowerCase();
-      if(WEIGHT_OPTIONS_BY_UNIT[u]) return WEIGHT_OPTIONS_BY_UNIT[u];
-      if(u==='kilogram'||u==='kgs') return WEIGHT_OPTIONS_BY_UNIT['kg'];
-      if(u==='pound'||u==='lbs')   return WEIGHT_OPTIONS_BY_UNIT['lb'];
-      if(u==='liter')              return WEIGHT_OPTIONS_BY_UNIT['l'];
-      if(u==='milliliter')         return WEIGHT_OPTIONS_BY_UNIT['ml'];
-      if(u==='piece'||u==='each')  return WEIGHT_OPTIONS_BY_UNIT['unit'];
+    function optionsForUnit(uRaw) {
+      const u = (uRaw || '').toString().trim().toLowerCase();
+      if (WEIGHT_OPTIONS_BY_UNIT[u]) return WEIGHT_OPTIONS_BY_UNIT[u];
+      if (u === 'kilogram' || u === 'kgs') return WEIGHT_OPTIONS_BY_UNIT['kg'];
+      if (u === 'pound' || u === 'lbs') return WEIGHT_OPTIONS_BY_UNIT['lb'];
+      if (u === 'liter') return WEIGHT_OPTIONS_BY_UNIT['l'];
+      if (u === 'milliliter') return WEIGHT_OPTIONS_BY_UNIT['ml'];
+      if (u === 'piece' || u === 'each') return WEIGHT_OPTIONS_BY_UNIT['unit'];
       return DEFAULT_WEIGHTS;
     }
 
     /* === Group strictly by Zoho built-in category_name === */
-    function normalizeStr(v){ return v==null ? '' : String(v).trim(); }
-    function isJunk(v){ const s=normalizeStr(v).toLowerCase(); return !s||['uncategorized','n/a','na','-'].includes(s); }
-    function getSection(item){ const c=normalizeStr(item.category_name); return !isJunk(c)?c:'Other'; }
-    function buildSections(items){
-      const m=new Map();
-      for(const it of items){ const sec=getSection(it); if(!m.has(sec)) m.set(sec,[]); m.get(sec).push(it); }
-      const keys=[...m.keys()];
-      const real=keys.filter(k=>k!=='Other');
-      const ordered=(real.length?real:['Other']).sort((a,b)=>a.localeCompare(b));
-      return {ordered,buckets:m};
+    function normalizeStr(v) { return v == null ? '' : String(v).trim(); }
+    function isJunk(v) { const s = normalizeStr(v).toLowerCase(); return !s || ['uncategorized', 'n/a', 'na', '-'].includes(s); }
+    function getSection(item) { const c = normalizeStr(item.category_name); return !isJunk(c) ? c : 'Other'; }
+    function buildSections(items) {
+      const m = new Map();
+      for (const it of items) { const sec = getSection(it); if (!m.has(sec)) m.set(sec, []); m.get(sec).push(it); }
+      const keys = [...m.keys()];
+      const real = keys.filter(k => k !== 'Other');
+      const ordered = (real.length ? real : ['Other']).sort((a, b) => a.localeCompare(b));
+      return { ordered, buckets: m };
     }
 
     /* === UI refs === */
-    const banner=document.getElementById('banner');
-    const search=document.getElementById('search');
-    const perPage=document.getElementById('perPage');
-    const refreshBtn=document.getElementById('refresh');
-    const sectionsEl=document.getElementById('sections');
-    const navEl=document.getElementById('section-nav');
+    const banner = document.getElementById('banner');
+    const search = document.getElementById('search');
+    const perPage = document.getElementById('perPage');
+    const refreshBtn = document.getElementById('refresh');
+    const sectionsEl = document.getElementById('sections');
+    const navEl = document.getElementById('section-nav');
 
-    const leadModal=document.getElementById('leadModal');
-    const modalTitle=document.getElementById('modalTitle');
-    const firstNameEl=document.getElementById('firstName');
-    const lastNameEl=document.getElementById('lastName');
-    const emailEl=document.getElementById('email');
-    const phoneEl=document.getElementById('phone');
-    const notesEl=document.getElementById('notes');
-    const cancelBtn=document.getElementById('cancelBtn');
-    const createLeadBtn=document.getElementById('createLeadBtn');
+    const leadModal = document.getElementById('leadModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const firstNameEl = document.getElementById('firstName');
+    const lastNameEl = document.getElementById('lastName');
+    const emailEl = document.getElementById('email');
+    const phoneEl = document.getElementById('phone');
+    const notesEl = document.getElementById('notes');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const createLeadBtn = document.getElementById('createLeadBtn');
 
     /* === State === */
-    let allItems=[]; let preview=false; let selectedProduct=null; let selectedWeight='';
+    let allItems = []; let preview = false; let selectedProduct = null; let selectedWeight = '';
 
-    const DEMO_ITEMS=[{id:'1',name:'Demo Product',rate:100,description:'Demo',sku:'DEMO',category_name:'Sample',unit:'kg'}];
+    const DEMO_ITEMS = [{ id: '1', name: 'Demo Product', rate: 100, description: 'Demo', sku: 'DEMO', category_name: 'Sample', unit: 'kg' }];
 
     /* === Data === */
-    async function fetchItems(page=1){
-      const res=await fetch(`/api/items?page=${page}&per_page=${perPage.value}`);
-      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    async function fetchItems(page = 1) {
+      const res = await fetch(`/api/items?page=${page}&per_page=${perPage.value}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     }
-    async function loadAll(){
-      sectionsEl.innerHTML='';
-      let page=1, items=[], more=true;
-      try{
-        while(more){
-          const data=await fetchItems(page);
-          const chunk=(data.items||[]).map(x=>({
-            id:x.item_id, name:x.name, rate:x.rate,
-            description:(x.description||'').trim(),
-            sku:x.sku||x.item_name||'',
-            category_name:x.category_name||'',
-            unit:x.unit||'',
-            weight_options:(x.weight_options||'').trim()
+    async function loadAll() {
+      sectionsEl.innerHTML = '';
+      let page = 1, items = [], more = true;
+      try {
+        while (more) {
+          const data = await fetchItems(page);
+          const chunk = (data.items || []).map(x => ({
+            id: x.item_id, name: x.name, rate: x.rate,
+            description: (x.description || '').trim(),
+            sku: x.sku || x.item_name || '',
+            category_name: x.category_name || '',
+            unit: x.unit || '',
+            weight_options: (x.weight_options || '').trim()
           }));
-          items=items.concat(chunk);
-          const ctx=data.page_context||{}; const cur=ctx.page||page; const total=ctx.total_pages||1;
-          more=cur<total; page++;
+          items = items.concat(chunk);
+          const ctx = data.page_context || {}; const cur = ctx.page || page; const total = ctx.total_pages || 1;
+          more = cur < total; page++;
         }
-        allItems=items;
-      }catch(e){
-        preview=true; allItems=DEMO_ITEMS;
-        banner.style.display='block';
-        banner.innerHTML='<span class="warn">Preview mode:</span> Using sample products (API did not return live data).';
+        allItems = items;
+      } catch (e) {
+        preview = true; allItems = DEMO_ITEMS;
+        banner.style.display = 'block';
+        banner.innerHTML = '<span class="warn">Preview mode:</span> Using sample products (API did not return live data).';
       }
       render();
     }
 
     /* === Cards & render === */
-    function escapeHtml(s){return String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+    function escapeHtml(s) { return String(s).replace(/[&<>\"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])) }
 
-    function createCard(item){
-      const node=document.createElement('div');
-      node.className='card';
+    function createCard(item) {
+      const node = document.createElement('div');
+      node.className = 'card';
 
       const derived = optionsForUnit(item.unit);
-      const explicit = (item.weight_options||'').split(',').map(s=>s.trim()).filter(Boolean);
+      const explicit = (item.weight_options || '').split(',').map(s => s.trim()).filter(Boolean);
       const weights = explicit.length ? explicit : derived;
-      const unitLabel = (item.unit||'').toString().trim();
+      const unitLabel = (item.unit || '').toString().trim();
 
       node.innerHTML = `
         <h3 class="title">${escapeHtml(item.name)}</h3>
 
         <div class="price-line">
           <span class="price-label">Starting&nbsp;at</span>
-          <span class="price">$${Number(item.rate||0).toLocaleString()}</span>
+          <span class="price">$${Number(item.rate || 0).toLocaleString()}</span>
         </div>
 
         <div class="desc-wrap">
           <div class="desc-label">Product Description</div>
-          <p class="desc">${escapeHtml(item.description||'')}</p>
+          <p class="desc">${escapeHtml(item.description || '')}</p>
         </div>
 
         <div class="spacer"></div>
@@ -379,25 +740,25 @@
         <div class="row">
           <select class="select weight-select" aria-label="Select size">
             <option value="">Select size${unitLabel ? ` (${escapeHtml(unitLabel)})` : ''}</option>
-            ${weights.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join('')}
+            ${weights.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join('')}
           </select>
         </div>
 
         <div class="row-end">
-          <span class="sku" title="${escapeHtml(item.sku||'')}">SKU: ${escapeHtml(item.sku||'')}</span>
-          <button class="cta place-btn" disabled>Place order</button>
+          <span class="sku" title="${escapeHtml(item.sku || '')}">SKU: ${escapeHtml(item.sku || '')}</span>
+          <button class="place-btn primary" disabled>Place order</button>
         </div>
       `;
 
       const weightSel = node.querySelector('.weight-select');
       const btn = node.querySelector('.place-btn');
-      weightSel.addEventListener('change', ()=>{ btn.disabled = !weightSel.value; });
-      btn.addEventListener('click', ()=>{
-        if(!weightSel.value){
+      weightSel.addEventListener('change', () => { btn.disabled = !weightSel.value; });
+      btn.addEventListener('click', () => {
+        if (!weightSel.value) {
           // clear, focus and notify user to select a size before placing order
           weightSel.focus();
           weightSel.classList.add('highlight');
-          setTimeout(()=> weightSel.classList.remove('highlight'), 1200);
+          setTimeout(() => weightSel.classList.remove('highlight'), 1200);
           return alert('Please select a size before placing your order.');
         }
         openLeadModal(item, weightSel.value);
@@ -406,33 +767,33 @@
       return node;
     }
 
-    function render(){
-      const q=(search.value||'').toLowerCase();
-      const filtered=allItems.filter(i => i.name.toLowerCase().includes(q) || (i.sku||'').toLowerCase().includes(q));
+    function render() {
+      const q = (search.value || '').toLowerCase();
+      const filtered = allItems.filter(i => i.name.toLowerCase().includes(q) || (i.sku || '').toLowerCase().includes(q));
 
-      const {ordered, buckets} = buildSections(filtered);
+      const { ordered, buckets } = buildSections(filtered);
 
       // Section nav
-      navEl.innerHTML='';
-      ordered.forEach(sec=>{
-        const a=document.createElement('a'); a.textContent=sec; a.href=`#sec-${encodeURIComponent(sec)}`;
+      navEl.innerHTML = '';
+      ordered.forEach(sec => {
+        const a = document.createElement('a'); a.textContent = sec; a.href = `#sec-${encodeURIComponent(sec)}`;
         navEl.appendChild(a);
       });
 
       // Sections
-      sectionsEl.innerHTML='';
-      if(!ordered.length){
-        const empty=document.createElement('div'); empty.className='card'; empty.textContent='No products found.'; sectionsEl.appendChild(empty); return;
+      sectionsEl.innerHTML = '';
+      if (!ordered.length) {
+        const empty = document.createElement('div'); empty.className = 'card'; empty.textContent = 'No products found.'; sectionsEl.appendChild(empty); return;
       }
 
-      ordered.forEach(sec=>{
-        const items=buckets.get(sec)||[]; if(!items.length) return;
-        const section=document.createElement('section'); section.className='section'; section.id=`sec-${encodeURIComponent(sec)}`;
+      ordered.forEach(sec => {
+        const items = buckets.get(sec) || []; if (!items.length) return;
+        const section = document.createElement('section'); section.className = 'section'; section.id = `sec-${encodeURIComponent(sec)}`;
 
-        const h=document.createElement('h2'); h.className='section__title'; h.textContent=sec; section.appendChild(h);
+        const h = document.createElement('h2'); h.className = 'section__title'; h.textContent = sec; section.appendChild(h);
 
-        const g=document.createElement('div'); g.className='section__grid';
-        items.forEach(it=> g.appendChild(createCard(it)));
+        const g = document.createElement('div'); g.className = 'section__grid';
+        items.forEach(it => g.appendChild(createCard(it)));
         section.appendChild(g);
 
         sectionsEl.appendChild(section);
@@ -440,35 +801,35 @@
     }
 
     /* ------------ Modal ------------ */
-    function openLeadModal(item, weight){
-      selectedProduct=item; selectedWeight=weight;
-      modalTitle.textContent=`Place order: ${item.name}`;
-      firstNameEl.value=''; lastNameEl.value=''; emailEl.value=''; phoneEl.value=''; notesEl.value='';
-      leadModal.style.display='flex';
+    function openLeadModal(item, weight) {
+      selectedProduct = item; selectedWeight = weight;
+      modalTitle.textContent = `Place order: ${item.name}`;
+      firstNameEl.value = ''; lastNameEl.value = ''; emailEl.value = ''; phoneEl.value = ''; notesEl.value = '';
+      leadModal.style.display = 'flex';
     }
-    document.getElementById('cancelBtn').addEventListener('click', ()=>{ leadModal.style.display='none'; selectedProduct=null; selectedWeight=''; });
-    document.getElementById('createLeadBtn').addEventListener('click', async ()=>{
-      if(!selectedProduct) return;
-      if(!firstNameEl.value.trim()){ firstNameEl.focus(); return alert('Please enter your first name.'); }
-      if(!lastNameEl.value.trim()){  lastNameEl.focus();  return alert('Please enter your last name.'); }
-      if(!emailEl.value.trim()){     emailEl.focus();     return alert('Please enter your email.'); }
-      if(!phoneEl.value.trim()){     phoneEl.focus();     return alert('Please enter your phone.'); }
+    document.getElementById('cancelBtn').addEventListener('click', () => { leadModal.style.display = 'none'; selectedProduct = null; selectedWeight = ''; });
+    document.getElementById('createLeadBtn').addEventListener('click', async () => {
+      if (!selectedProduct) return;
+      if (!firstNameEl.value.trim()) { firstNameEl.focus(); return alert('Please enter your first name.'); }
+      if (!lastNameEl.value.trim()) { lastNameEl.focus(); return alert('Please enter your last name.'); }
+      if (!emailEl.value.trim()) { emailEl.focus(); return alert('Please enter your email.'); }
+      if (!phoneEl.value.trim()) { phoneEl.focus(); return alert('Please enter your phone.'); }
 
-      const payload={
-        firstName:firstNameEl.value.trim(),
-        lastName:lastNameEl.value.trim(),
-        email:emailEl.value.trim(),
-        phone:phoneEl.value.trim(),
-        productName:selectedProduct.name,
-        notes:(notesEl.value||'').trim()?`Selected size: ${selectedWeight}\n${notesEl.value.trim()}`:`Selected size: ${selectedWeight}`
+      const payload = {
+        firstName: firstNameEl.value.trim(),
+        lastName: lastNameEl.value.trim(),
+        email: emailEl.value.trim(),
+        phone: phoneEl.value.trim(),
+        productName: selectedProduct.name,
+        notes: (notesEl.value || '').trim() ? `Selected size: ${selectedWeight}\n${notesEl.value.trim()}` : `Selected size: ${selectedWeight}`
       };
 
-      const res=await fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      const json=await res.json().catch(()=> ({}));
-      if(!res.ok){ alert('Request failed: '+(json.message||json.error||res.status)); return; }
+      const res = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) { alert('Request failed: ' + (json.message || json.error || res.status)); return; }
 
       alert('Thanks! Your order request has been sent.');
-      leadModal.style.display='none'; selectedProduct=null; selectedWeight='';
+      leadModal.style.display = 'none'; selectedProduct = null; selectedWeight = '';
     });
 
     /* ------------ Search/Refresh ------------ */
@@ -479,5 +840,5 @@
     loadAll();
   </script>
 </body>
-</html>
 
+</html>
