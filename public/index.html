@@ -390,23 +390,19 @@
 
     .card .row-end {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       padding-top: 12px;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .sku {
-      font-size: 11px;
-      color: #555;
-      font-family: monospace;
-    }
-
     .place-btn {
-      padding: 8px 16px;
-      font-size: 13px;
+      width: 100%;
+      padding: 10px 16px;
+      font-size: 14px;
       background: transparent;
       border: 1px solid var(--stroke);
+      text-align: center;
     }
 
     .place-btn:hover:not([disabled]) {
@@ -745,7 +741,6 @@
         </div>
 
         <div class="row-end">
-          <span class="sku" title="${escapeHtml(item.sku || '')}">SKU: ${escapeHtml(item.sku || '')}</span>
           <button class="place-btn primary" disabled>Place order</button>
         </div>
       `;
