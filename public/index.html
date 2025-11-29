@@ -618,8 +618,7 @@
       g: ['100 g', '250 g', '500 g', '1 kg'],
       lb: ['1 lb', '5 lb', '10 lb', '25 lb'],
       oz: ['1 oz', '2 oz', '4 oz', '8 oz', '16 oz'],
-      l: ['100 mL', '250 mL', '500 mL', '1 L', '5 L'],
-      ml: ['100 mL', '250 mL', '500 mL', '1000 mL'],
+      l: ['1 L', '5 L'],
       unit: ['10 ct', '25 ct', '50 ct', '100 ct'],
       pcs: ['10 ct', '25 ct', '50 ct', '100 ct'],
       tablet: ['100 ct', '250 ct', '500 ct', '1000 ct']
@@ -632,7 +631,7 @@
       if (u === 'kilogram' || u === 'kgs') return WEIGHT_OPTIONS_BY_UNIT['kg'];
       if (u === 'pound' || u === 'lbs') return WEIGHT_OPTIONS_BY_UNIT['lb'];
       if (u === 'liter') return WEIGHT_OPTIONS_BY_UNIT['l'];
-      if (u === 'milliliter') return WEIGHT_OPTIONS_BY_UNIT['ml'];
+      if (u === 'milliliter' || u === 'ml') return WEIGHT_OPTIONS_BY_UNIT['l'];
       if (u === 'piece' || u === 'each') return WEIGHT_OPTIONS_BY_UNIT['unit'];
       return DEFAULT_WEIGHTS;
     }
