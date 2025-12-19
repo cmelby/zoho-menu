@@ -1,0 +1,28 @@
+[00:32:08.359] Server  ERROR   ⨯ Error: Cannot find module 'next/dist/client/components/builtin/global-not-found'
+Require stack:
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/router-server.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/start-server.js
+[00:32:08.380] Server  ERROR   Error: Cannot find module 'next/dist/pages/_error'
+Require stack:
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/router-server.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/start-server.js
+[00:32:08.394] Server  ERROR   ⨯ Error: Cannot find module 'next/dist/pages/_error'
+Require stack:
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/router-server.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/start-server.js
+[00:32:08.411] Server  ERROR   Error: Cannot find module 'next/dist/pages/_error'
+Require stack:
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/dev/on-demand-entry-handler.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/dev/hot-reloader-turbopack.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/router-server.js
+- /Users/chrismelby/Desktop/zoho-menu/tabeaubrands/node_modules/next/dist/server/lib/start-server.js
